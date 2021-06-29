@@ -42,9 +42,10 @@ Configure Lib
 * Select downloaded “norgic-callsdk-v1.0.0.aar” .AAR file and click Finish
 * From Android Studio File Explorer  select project
 
-<img width="498" alt="No Devices" src="https://user-images.githubusercontent.com/86282129/123636395-41e08980-d836-11eb-8643-429d6e5510d5.png">
+<img width="798" alt="Screenshot 2021-06-29 at 6 59 02 PM" src="https://user-images.githubusercontent.com/86282129/123811034-542cf700-d90c-11eb-8294-04a1a9d858c5.png">
 
-* And then go to AndroidOne2One -> app -> src -> build.gradle and past following line in Dependencies  section
+
+* And then go to vdotok-call -> app -> src -> build.gradle and past following line in Dependencies  section
 * “implementation project(path: ':norgic-callsdk-v1.0.0’)”
 <img width="765" alt="dependencie" src="https://user-images.githubusercontent.com/86282129/123636324-28d7d880-d836-11eb-8af3-8e06534eca4e.png">
 * Click on “sync now” Button from top right corner
@@ -55,5 +56,5 @@ Build Project
 * You can find your phone name in running devices list like describe in below image
 * select your device and click on Play button
 * After running some automated commands and building gradle your app will install on you connected device
-* <img width="899" alt="Screenshot 2021-06-22 at 8 03 28 PM" src="https://user-images.githubusercontent.com/86282129/123636171-f9c16700-d835-11eb-8d22-cafb2b6ae4da.png">
+<img width="1012" alt="Screenshot 2021-06-29 at 6 59 36 PM" src="https://user-images.githubusercontent.com/86282129/123811062-5bec9b80-d90c-11eb-96e1-ee50dee125c5.png">
 
