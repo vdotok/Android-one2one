@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="search"
+            type="androidx.databinding.ObservableField&lt;String&gt;" />
+        <variable
+            name="username"
+            type="androidx.databinding.ObservableField&lt;String&gt;" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:focusable="true"
+        android:clickable="true">
+
+        <include
+            android:id="@+id/custom_toolbar"
+            layout="@layout/custom_toolbar"/>
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/Theme_search_view"
+            android:text="@={search}"
+            android:hint="@string/hint_search_bar"
+            android:textAlignment="viewStart"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/custom_toolbar" />
+
+        <TextView
+            android:id="@+id/tv_selectContact"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/Theme_TextView"
+            android:textAlignment="viewStart"
+            android:layout_gravity="center|start"
+            android:text="@string/contacts"
+            android:layout_marginTop="22dp"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="@font/inter_regular_400"
+            android:textSize="14sp"
+            android:textColor="@color/indigo"
+            app:layout_constraintEnd_toEndOf="@id/search_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/search_edit_text"
+            />
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="5"
+            tools:listitem="@layout/user_row"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tv_logout"
+            app:layout_constraintTop_toBottomOf="@+id/tv_selectContact">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvUserList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="24dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/user_row" />
+
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+        <TextView
+            android:id="@+id/tv_logout"
+            style="@style/Theme_Button_DeActivated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center"
+            android:padding="10dp"
+            android:layout_marginTop="30dp"
+            android:stateListAnimator="@null"
+            android:text="@{String.format(@string/log_out,username)}"
+            android:layout_marginBottom="20dp"
+            app:layout_constraintTop_toBottomOf="@id/swipeRefreshLayout"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <include
+            android:id="@+id/callUI"
+            android:visibility="invisible"
+            layout="@layout/layout_call_screen" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

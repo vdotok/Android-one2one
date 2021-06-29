@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="incomingCallTitle"
+            type="androidx.databinding.ObservableField&lt;String&gt;" />
+        <variable
+            name="username"
+            type="androidx.databinding.ObservableField&lt;String&gt;" />
+
+        <variable
+            name="isIncomingCall"
+            type="androidx.databinding.ObservableBoolean" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/containerIncomingCall">
+
+        <View
+            android:layout_height="0dp"
+            android:layout_width="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/light_grey1"
+            app:layout_constraintBottom_toTopOf="@id/viewCall" />
+
+        <TextView
+            android:id="@+id/tvCallTypeReceiver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            tools:text="audio call"
+            android:text="@{incomingCallTitle}"
+            android:layout_marginTop="60dp"
+            android:textColor="@color/gray_time"
+            android:gravity="center_horizontal"
+            android:textSize="14sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvUserNameReceiver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_horizontal"
+            style="@style/Text_Call_Name"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="@{username}"
+            tools:text="user name"
+            app:layout_constraintTop_toBottomOf="@id/tvCallTypeReceiver"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <View
+            android:id="@+id/viewCall"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/light_grey1"
+            app:layout_constraintTop_toBottomOf="@id/tvUserNameReceiver"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgUserPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:src="@drawable/ic_user_icon"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+
+        <LinearLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="40dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:visibility="@{isIncomingCall ? View.GONE : View.VISIBLE}"
+                android:src="@drawable/ic_call_video_rounded" />
+
+            <ImageView
+                android:id="@+id/imgCallReject"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_end_call" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:visibility="@{isIncomingCall ? View.GONE : View.VISIBLE}"
+                android:src="@drawable/ic_mute_mic1" />
+
+            <ImageView
+                android:id="@+id/imgCallAccept"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="50dp"
+                android:visibility="@{isIncomingCall ? View.VISIBLE : View.GONE}"
+                android:src="@drawable/ic_accept" />
+
+        </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
