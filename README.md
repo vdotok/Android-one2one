@@ -40,16 +40,16 @@ Device Setting
 Configure Lib
 * From Android Studio file menu click on File->New->New Module-> Import .JAR/.AAR Package and click on next
 * Select downloaded “norgic-callsdk-v1.0.0.aar” .AAR file and click Finish
-* From Android Studio File Explorer  select project
-
-<img width="798" alt="Screenshot 2021-06-29 at 6 59 02 PM" src="https://user-images.githubusercontent.com/86282129/123811034-542cf700-d90c-11eb-8294-04a1a9d858c5.png">
-
+* From Android Studio File Explorer  select project 
+<img width="498" alt="123636395-41e08980-d836-11eb-8643-429d6e5510d5" src="https://user-images.githubusercontent.com/86282129/123811571-cb628b00-d90c-11eb-9584-b5a8f12957dc.png">
 
 * And then go to vdotok-call -> app -> src -> build.gradle and past following line in Dependencies  section
 * “implementation project(path: ':norgic-callsdk-v1.0.0’)”
-<img width="765" alt="dependencie" src="https://user-images.githubusercontent.com/86282129/123636324-28d7d880-d836-11eb-8af3-8e06534eca4e.png">
+
+<img width="798" alt="Screenshot 2021-06-29 at 6 59 02 PM" src="https://user-images.githubusercontent.com/86282129/123811034-542cf700-d90c-11eb-8294-04a1a9d858c5.png">
+
 * Click on “sync now” Button from top right corner
-* From File explorer open chattApp -> app -> src -> main -> java -> com -> norgic -> vdotokchat -> utils -> ApplicationConstants replace “SDK_TENANT_ID” with your own TenantID 
+* From File explorer open chattApp -> app -> src -> main -> java -> com -> norgic -> vdotokchat -> utils -> ApplicationConstants replace “SDK_PROJECT_ID” with your own Project Id 
 
 Build Project 
 * Connect your phone with system in file sharing mode
