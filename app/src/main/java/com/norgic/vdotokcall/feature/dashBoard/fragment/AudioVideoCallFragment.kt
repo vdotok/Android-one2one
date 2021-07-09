@@ -15,6 +15,9 @@ import androidx.core.view.isVisible
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.navigation.Navigation
+import com.norgic.callsdks.CallClient
+import com.norgic.callsdks.models.AudioVideoStateSwitchParams
+import com.norgic.callsdks.models.CallParams
 import com.norgic.vdotokcall.R
 import com.norgic.vdotokcall.databinding.LayoutAudioFragmentBinding
 import com.norgic.vdotokcall.extensions.hide
@@ -23,12 +26,11 @@ import com.norgic.vdotokcall.extensions.show
 import com.norgic.vdotokcall.feature.dashBoard.ui.DashBoardActivity
 import com.norgic.vdotokcall.fragments.CallMangerListenerFragment
 import com.norgic.vdotokcall.interfaces.FragmentRefreshListener
-import com.norgic.vdotokcall.models.AcceptCallModel
 import com.norgic.vdotokcall.models.UserModel
 import com.norgic.vdotokcall.prefs.Prefs
+import com.norgic.vdotokcall.utils.ApplicationConstants.CALL_PARAMS
 import com.norgic.vdotokcall.utils.TimeUtils.getTimeFromSeconds
 import com.norgic.vdotokcall.utils.performSingleClick
-import com.norgic.callsdk.CallClient
 import org.webrtc.EglBase
 import org.webrtc.VideoTrack
 import java.util.*
@@ -37,17 +39,17 @@ import java.util.concurrent.TimeUnit
 
 class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshListener {
 
-    private var acceptCallModel: AcceptCallModel? = null
+    private var callParams: CallParams? = null
     private var isIncomingCall = false
     private lateinit var binding: LayoutAudioFragmentBinding
 
     private lateinit var prefs: Prefs
 
     private lateinit var callClient: CallClient
-    private var userModel : UserModel? = null
-    private var name : String? = null
+    private var userModel: UserModel? = null
+    private var name: String? = null
 
-    private var userName : ObservableField<String> = ObservableField<String>()
+    private var userName: ObservableField<String> = ObservableField<String>()
     private var isVideoCall = ObservableBoolean(false)
 
     private var isMuted = false
@@ -61,14 +63,12 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
         binding = LayoutAudioFragmentBinding.inflate(inflater, container, false)
-
         init()
         startTimer()
-
         return binding.root
     }
 
@@ -90,15 +90,17 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
         displayUi(isVideoCall.get())
 
         setListeners()
-
         addLocalCameraStream()
-
-
+        addRemoteVideoStreamForEchoTesting()
         addTouchEventListener()
-
-
         screenWidth = context?.resources?.displayMetrics?.widthPixels!!
         screenHeight = context?.resources?.displayMetrics?.heightPixels!!
+    }
+
+    private fun addRemoteVideoStreamForEchoTesting() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            (activity as DashBoardActivity).remoteStream?.let { onRemoteStreamReceived(it, "", "") }
+        }, TimeUnit.SECONDS.toMillis(1))
     }
 
     private fun addLocalCameraStream() {
@@ -115,18 +117,19 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
             name = userModel?.fullName
 
 
-
-
-        } ?: kotlin.run{
+        } ?: kotlin.run {
             isVideoCall.set(arguments?.getBoolean(AllUserListFragment.IS_VIDEO_CALL) ?: false)
             name = (arguments?.get("userName") as CharSequence?).toString()
-            acceptCallModel = arguments?.getParcelable(AcceptCallModel.TAG) as AcceptCallModel?
+            callParams = arguments?.getParcelable(CALL_PARAMS) as CallParams?
             isIncomingCall = true
         }
     }
 
-    private fun setListeners(){
-        binding.ivEndCall.performSingleClick { endCall()}
+    private fun setListeners() {
+        binding.ivEndCall.performSingleClick {
+            (activity as DashBoardActivity).endCall()
+            //endCall()
+        }
 
         binding.ivMute.setOnClickListener { muteButtonAction() }
 
@@ -134,7 +137,7 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
 
         binding.ivCamSwitch.setOnClickListener { cameraSwitchAction() }
 
-        binding.ivCameraOnOff.setOnClickListener { if(isVideoCall.get())cameraOnOffAction() }
+        binding.ivCameraOnOff.setOnClickListener { if (isVideoCall.get()) cameraOnOffAction() }
     }
 
     private fun cameraOnOffAction() {
@@ -147,18 +150,26 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
                 isVideoResume -> {
                     binding.localViewCard.show()
                     binding.localView.show()
-                    callClient.resumeVideo(sessionId)
+                    callClient.resumeVideo(AudioVideoStateSwitchParams(
+                        sessionKey = sessionId,
+                        ownRefId = prefs.loginInfo?.refId!!,
+                        audioState = 1,
+                        videoState = if (isVideoResume) 1 else 0
+                    ))
                     binding.ivCameraOnOff.setImageResource(R.drawable.ic_call_video_rounded)
                 }
                 else -> {
                     binding.localViewCard.hide()
                     binding.localView.hide()
-                    callClient.pauseVideo(sessionId)
+                    callClient.pauseVideo(AudioVideoStateSwitchParams(
+                        sessionKey = sessionId,
+                        ownRefId = prefs.loginInfo?.refId!!,
+                        audioState = 1,
+                        videoState = if (isVideoResume) 1 else 0
+                    ))
                     binding.ivCameraOnOff.setImageResource(R.drawable.ic_video_off)
                 }
             }
-
-            callClient.switchCallType(sessionId, mcToken = prefs.loginInfo?.mcToken!!, prefs.loginInfo?.refId!!, 1, if (isVideoResume) 1 else 0)
         }
 
 
@@ -171,12 +182,12 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
     }
 
     private fun speakerButtonAction() {
+        isSpeakerOff = isSpeakerOff.not()
         when {
-            isSpeakerOff -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
-            else -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
+            isSpeakerOff -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
+            else -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
         }
 
-        isSpeakerOff = isSpeakerOff.not()
         callClient.toggleSpeakerOnOff()
     }
 
@@ -188,8 +199,13 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
             else -> binding.ivMute.setImageResource(R.drawable.ic_unmute_mic)
         }
 
-        (activity as DashBoardActivity).activeSessionId?.let {
-                sessionId -> callClient.muteUnMuteMic(sessionId)
+        (activity as DashBoardActivity).activeSessionId?.let { sessionId ->
+            callClient.muteUnMuteMic(AudioVideoStateSwitchParams(
+                sessionKey = sessionId,
+                ownRefId = prefs.loginInfo?.refId!!,
+                audioState = if (callClient.isMute(sessionId)) 1 else 0,
+                videoState = if (isVideoCall.get()) 1 else 0
+            ))
         }
     }
 
@@ -218,10 +234,10 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
                         val displacementY = event.rawY + rightDY
 
                         binding.localViewCard.animate()
-                                .x(displacementX)
-                                .y(displacementY)
-                                .setDuration(0)
-                                .start()
+                            .x(displacementX)
+                            .y(displacementY)
+                            .setDuration(0)
+                            .start()
 
                         Handler(Looper.getMainLooper()).postDelayed({
 
@@ -229,21 +245,33 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
                             yPoint = view.y + view.height
 
                             when {
-                                xPoint > screenWidth/2 && yPoint < screenHeight/2 -> {
+                                xPoint > screenWidth / 2 && yPoint < screenHeight / 2 -> {
                                     //First Quadrant
-                                    animateView(((screenWidth - (view.width + THRESHOLD_VALUE))), (screenHeight/2 - (view.height + THRESHOLD_VALUE)))
+                                    animateView(
+                                        ((screenWidth - (view.width + THRESHOLD_VALUE))),
+                                        (screenHeight / 2 - (view.height + THRESHOLD_VALUE))
+                                    )
                                 }
-                                xPoint < screenWidth/2 && yPoint < screenHeight/2 -> {
+                                xPoint < screenWidth / 2 && yPoint < screenHeight / 2 -> {
                                     //Second Quadrant
-                                    animateView(THRESHOLD_VALUE, (screenHeight/2 - (view.height + THRESHOLD_VALUE)))
+                                    animateView(
+                                        THRESHOLD_VALUE,
+                                        (screenHeight / 2 - (view.height + THRESHOLD_VALUE))
+                                    )
                                 }
-                                xPoint < screenWidth/2 && yPoint > screenHeight/2 -> {
+                                xPoint < screenWidth / 2 && yPoint > screenHeight / 2 -> {
                                     //Third Quadrant
-                                    animateView(THRESHOLD_VALUE, (screenHeight/2 + view.height/2).toFloat())
+                                    animateView(
+                                        THRESHOLD_VALUE,
+                                        (screenHeight / 2 + view.height / 2).toFloat()
+                                    )
                                 }
                                 else -> {
                                     //Fourth Quadrant
-                                    animateView(((screenWidth - (view.width + THRESHOLD_VALUE))), (screenHeight/2 + view.height/2).toFloat())
+                                    animateView(
+                                        ((screenWidth - (view.width + THRESHOLD_VALUE))),
+                                        (screenHeight / 2 + view.height / 2).toFloat()
+                                    )
                                 }
                             }
 
@@ -260,33 +288,33 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
     }
 
 
-    private fun animateView(xPoint: Float, yPoint: Float){
+    private fun animateView(xPoint: Float, yPoint: Float) {
         binding.localViewCard.animate()
-                .x(xPoint)
-                .y(yPoint)
-                .setDuration(200)
-                .start()
+            .x(xPoint)
+            .y(yPoint)
+            .setDuration(200)
+            .start()
     }
 
     private fun endCall() {
         stopTimer()
         resetCallData()
-        (activity as DashBoardActivity).endCall()
-        Navigation.findNavController(binding.root).navigate(R.id.action_open_userList)
+        Navigation.findNavController(binding.root).navigateUp()
+//        Navigation.findNavController(binding.root).navigate(R.id.action_open_userList)
     }
 
-    private fun resetCallData(){
-        callClient.speakerOff()
+    private fun resetCallData() {
+//        callClient.speakerOff()
     }
 
     private fun displayUi(videoCall: Boolean) {
         userName.set(name)
-        if (!videoCall){
+        if (!videoCall) {
             binding.tvCallType.text = getString(R.string.audio_calling)
             binding.ivCameraOnOff.setImageResource(R.drawable.ic_video_off)
             binding.remoteView.invisible()
             binding.ivCamSwitch.hide()
-        }else{
+        } else {
             binding.tvCallType.text = getString(R.string.video_calling)
             binding.imgUserPhoto.hide()
 
@@ -323,11 +351,6 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
         (activity as DashBoardActivity).endCall()
     }
 
-    override fun onIncomingCall(model: AcceptCallModel) {}
-
-    override fun onStartCalling() {}
-
-    override fun outGoingCall(toPeer: String) {}
 
     override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {
         val mainHandler = activity?.mainLooper?.let { Handler(it) }
@@ -341,6 +364,14 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
                 videoView.setZOrderMediaOverlay(false)
                 videoView.setZOrderOnTop(false)
 
+                refreshLocalCameraView()
+
+                videoView.postDelayed({
+                    isSpeakerOff = false
+                    callClient.toggleSpeakerOnOff()
+                }, 1000)
+                binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
+
             } catch (e: Exception) {
                 Log.i("SocketLog", "onStreamAvailable: exception" + e.printStackTrace())
             }
@@ -353,6 +384,7 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
 
         val mainHandler = activity?.let { Handler(it.mainLooper) }
         val myRunnable = Runnable {
+            binding.remoteView.setZOrderMediaOverlay(false)
 
             val videoView = binding.localView
             videoView.setMirror(true)
@@ -362,18 +394,13 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
             stream.addSink(videoView)
             callClient.setView(videoView)
 
-            binding.remoteView.setZOrderMediaOverlay(false)
 
         }
         mainHandler?.post(myRunnable)
     }
 
-    override fun onCallMissed() {}
-
-    override fun onCallRejected(reason: String) {}
-
     override fun endOngoingCall(sessionId: String) {
-        activity?.runOnUiThread{
+        activity?.runOnUiThread {
             endCall()
         }
     }
@@ -383,21 +410,14 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
         activity?.runOnUiThread {
             if (videoState == 1) {
                 binding.imgUserPhoto.hide()
-                binding.remoteView.show()
                 binding.remoteView.setZOrderMediaOverlay(false)
                 binding.remoteView.setZOrderOnTop(false)
 
                 binding.localView.setZOrderMediaOverlay(true)
                 binding.localView.setZOrderOnTop(true)
 
-//                binding.localView.setEnableHardwareScaler(true)
-//                binding.localView.setZOrderMediaOverlay(true)
-//                // This we are doing to bring our local view to front
-//                animateView(((screenWidth - (binding.localView.width + THRESHOLD_VALUE))), (screenHeight/2 + binding.localView.height/2).toFloat())
-//                binding.localView.elevation = 10.0f
-
-
                 refreshLocalCameraView()
+                binding.remoteView.show()
 
             } else {
                 binding.imgUserPhoto.show()
@@ -415,19 +435,22 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
             binding.localView.setEnableHardwareScaler(true)
             binding.localView.requestFocus()
             binding.localView.show()
-//            animateView(
-//                    ((screenWidth - (binding.localView.width + THRESHOLD_VALUE))),
-//                    (screenHeight / 2 + binding.localView.height / 2).toFloat()
-//            )
-            //ViewCompat.setElevation(binding.remoteView, -1f)
+            animateView(
+                    ((screenWidth - (binding.localView.width + THRESHOLD_VALUE))),
+                    (screenHeight / 2 + binding.localView.height / 2).toFloat()
+            )
+//            ViewCompat.setElevation(binding.remoteView, -1f)
             ViewCompat.setElevation(binding.localViewCard, 11f)
             ViewCompat.setElevation(binding.localView, 11f)
         }
     }
 
-
     override fun onInternetConnectionLoss() {
         activity?.runOnUiThread { endCall() }
     }
+
+    override fun onAcceptIncomingCall(callParams: CallParams) {
+    }
+
 
 }

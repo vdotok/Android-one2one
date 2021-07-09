@@ -4,7 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjection
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,26 +15,26 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.snackbar.Snackbar
+import com.norgic.callsdks.CallClient
+import com.norgic.callsdks.commands.CallInfoResponse
+import com.norgic.callsdks.commands.RegisterResponse
+import com.norgic.callsdks.enums.*
+import com.norgic.callsdks.interfaces.CallSDKListener
+import com.norgic.callsdks.interfaces.StreamCallback
+import com.norgic.callsdks.models.CallParams
 import com.norgic.vdotokcall.R
 import com.norgic.vdotokcall.databinding.ActivityDashBoardBinding
 import com.norgic.vdotokcall.extensions.showSnackBar
 import com.norgic.vdotokcall.interfaces.FragmentRefreshListener
-import com.norgic.vdotokcall.models.AcceptCallModel
 import com.norgic.vdotokcall.models.LoginResponse
+import com.norgic.vdotokcall.models.MediaServerMap
 import com.norgic.vdotokcall.prefs.Prefs
 import com.norgic.vdotokcall.utils.ApplicationConstants
 import com.norgic.vdotokcall.utils.NetworkStatusLiveData
-import com.norgic.callsdk.CallClient
-import com.norgic.callsdk.enums.CallType
-import com.norgic.callsdk.enums.MediaType
-import com.norgic.callsdk.enums.SessionType
-import com.norgic.callsdk.interfaces.CallSDKListener
-import com.norgic.callsdk.interfaces.StreamCallback
-import com.norgic.callsdk.models.EnumConnectionStatus
 import org.webrtc.VideoTrack
 
 
-class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
+class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
 
     private lateinit var binding: ActivityDashBoardBinding
 
@@ -39,6 +42,7 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
     private lateinit var prefs: Prefs
 
     var localStream: VideoTrack? = null
+    var remoteStream: VideoTrack? = null
     var activeSessionId: String? = null
     var mListener: FragmentRefreshListener? = null
 
@@ -62,10 +66,13 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
 
         myLiveData.observe(this, { isInternetConnected ->
             when {
-                isInternetConnected == true && internetConnectionRestored -> connectClient()
+                isInternetConnected == true && internetConnectionRestored -> {connectClient()
+                    mListener?.onConnectionSuccess()
+                }
                 isInternetConnected == false -> {
                     internetConnectionRestored = true
                     mListener?.onInternetConnectionLoss()
+                    mListener?.onConnectionFail()
                 }
                 else -> {}
             }
@@ -115,16 +122,19 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
     }
 
 
-    private fun connectClient() {
+    fun connectClient() {
         prefs.sdkAuthResponse?.let {
-            callClient.connect(it.mediaServerMap.completeAddress)
+            if (callClient.isConnected() == null || callClient.isConnected() == false)
+                callClient.connect(getMediaServerAddress(it.mediaServerMap), it.mediaServerMap.endPoint)
         }
     }
 
 
-    companion object{
+    private fun getMediaServerAddress(mediaServer: MediaServerMap): String {
+        return "https://${mediaServer.host}:${mediaServer.port}"
+    }
 
-        const val TAG = "DASHBOARD_ACTIVITY"
+    companion object{
 
         fun createDashBoardActivity(context: Context) = Intent(
                 context,
@@ -143,9 +153,52 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
         runOnUiThread { binding.root.showSnackBar("Connected!") }
     }
 
+    override fun onError(cause: String) {
+//        connectClient()
+    }
+
+    override fun onSessionReady(mediaProjection: MediaProjection?) {
+    }
+
+    override fun audioVideoState(audioState: Int, videoState: Int, refId: String) {
+        mListener?.onAudioVideoStateChanged(audioState, videoState)
+    }
+
+    override fun callStatus(callInfoResponse: CallInfoResponse) {
+        runOnUiThread {
+            when (callInfoResponse.callStatus) {
+                CallStatus.CALL_CONNECTED -> {
+                    mListener?.onStartCalling()
+                }
+                CallStatus.OUTGOING_CALL_ENDED,
+                CallStatus.CALL_ENDED_SUCCESS-> {
+                    activeSessionId?.let { mListener?.endOngoingCall(it) }
+                }
+                CallStatus.CALL_REJECTED -> {
+                    mListener?.onCallRejected()
+                }
+                CallStatus.CALL_MISSED -> {
+                    mListener?.onCallMissed()
+                }
+                CallStatus.NO_ANSWER_FROM_TARGET -> {
+                    mListener?.onCallNoAnswer()
+                }
+                CallStatus.TARGET_IS_BUSY -> {
+                    mListener?.onCallBusy()
+                }
+                CallStatus.SESSION_TIMEOUT -> {
+                    mListener?.onCallTimeout()
+                }
+                else -> {}
+
+            }
+        }
+    }
+
     override fun connectionStatus(enumConnectionStatus: EnumConnectionStatus) {
         when (enumConnectionStatus) {
             EnumConnectionStatus.CONNECTED -> {
+                mListener?.onConnectionSuccess()
                 runOnUiThread {
                     callClient.register(
                             authToken = prefs.loginInfo?.authorizationToken!!,
@@ -154,21 +207,16 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
                 }
             }
             EnumConnectionStatus.NOT_CONNECTED -> {
-
-                prefs.sdkAuthResponse?.let {
-                    callClient.connect(it.mediaServerMap.completeAddress)
-                }
+                mListener?.onConnectionFail()
+                connectClient()
 
                 runOnUiThread {
                     Toast.makeText(this, "Not Connected!", Toast.LENGTH_SHORT).show()
                 }
             }
             EnumConnectionStatus.ERROR -> {
-
-                prefs.sdkAuthResponse?.let {
-
-                    callClient.connect(it.mediaServerMap.completeAddress)
-                }
+                mListener?.onConnectionFail()
+                connectClient()
                 runOnUiThread {
                     Toast.makeText(this, "Connection Error!", Toast.LENGTH_SHORT).show()
                 }
@@ -177,51 +225,24 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
         }
     }
 
-    override fun onClose(reason: String, isAccepted: Boolean) {
-        mListener?.onCallRejected(reason)
-    }
-
-    override fun registerStatus(isRegister: Boolean, response: String) {
-        runOnUiThread {
-            Log.d(TAG, "registerStatus : $isRegister  -- response: $response")
-        }
-    }
-
-    override fun audioVideoState(audioState: Int, videoState: Int) {
-        mListener?.onAudioVideoStateChanged(audioState, videoState)
-    }
-
-    override fun incomingCall(
-        from: String,
-        sessionUUID: String,
-        requestID: String,
-        callType: CallType,
-        mediaType: MediaType,
-        sessionType: SessionType
-    ) {
-        val model = AcceptCallModel(from, sessionUUID, requestID, callType, mediaType, sessionType)
-        mListener?.onIncomingCall(model)
-    }
-
-    override fun callConnected(callStatus: Boolean) {
-        runOnUiThread {
-            if (callStatus) {
-                mListener?.onStartCalling()
-            }
-        }
-    }
+//    override fun onClose(reason: String) {
+//        mListener?.onCallRejected(reason)
+//    }
 
     //    while dialing one2one call we need to save the sessionID based on the receiver's refID
     fun dialOneToOneCall(mediaType: MediaType, refIdUser: String) {
 
         prefs.loginInfo?.let {
-
             it.mcToken?.let { mcToken ->
                 activeSessionId = callClient.dialOne2OneCall(
-                        it.refId!!,
-                        arrayListOf(refIdUser),
-                        mcToken,
-                        mediaType
+                    callParams = CallParams(
+                        refId = it.refId!!,
+                        toRefIds = arrayListOf(refIdUser),
+                        mcToken = mcToken,
+                        mediaType = mediaType,
+                        callType = CallType.ONE_TO_ONE,
+                        sessionType = SessionType.CALL
+                    )
                 )
             } ?: kotlin.run {
                 val snackbar: Snackbar = Snackbar
@@ -243,46 +264,17 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
         super.onDestroy()
     }
 
-
-    override fun tokenRequestSuccess(mcToken: String) {
-        val userModel: LoginResponse? = prefs.loginInfo
-        userModel?.mcToken = mcToken
-        userModel?.let {
-            prefs.loginInfo = it
-        }
-
-        runOnUiThread {
-            binding.root.showSnackBar("Socket Connected!")
-        }
-    }
-
-    fun acceptIncomingCall(
-        from: String,
-        sessionUUID: String,
-        requestID: String,
-        callType: CallType,
-        mediaType: MediaType,
-        sessionType: SessionType
-    ) {
+    fun acceptIncomingCall(callParams: CallParams) {
         prefs.loginInfo?.let {
             activeSessionId = callClient.acceptIncomingCall(
-                    it.refId!!,
-                    sessionUUID,
-                    requestID,
-                    arrayListOf(from),
-                    it.mcToken!!,
-                    callType,
-                    mediaType,
-                    sessionType
+                    it.refId!!, callParams
             )
         }
-
-//        startTimer()
-
     }
 
     fun endCall() {
         localStream = null
+        remoteStream = null
         activeSessionId?.let {
             callClient.endCallSession(it)
         }
@@ -290,35 +282,60 @@ class DashBoardActivity : AppCompatActivity(), CallSDKListener, StreamCallback {
 
     override fun invalidResponse(message: String) {}
 
+    // when socket is disconnected
+    override fun onClose(reason: String) {
+        connectClient()
+    }
+
     override fun responseMessages(message: String) {
         runOnUiThread { Toast.makeText(this, "Response: $message", Toast.LENGTH_SHORT).show() }
     }
 
-    override fun outgoingCall(toPeer: String) {
-        mListener?.outGoingCall(toPeer)
+    override fun incomingCall(callParams: CallParams) {
+        if(activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true){
+            callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
+            return
+        }
+        mListener?.onAcceptIncomingCall(callParams)
     }
 
-    override fun endOutgoingCall(sessionId: String) {
-        mListener?.endOngoingCall(sessionId)
-    }
+    override fun registrationStatus(registerResponse: RegisterResponse) {
 
-    override fun onSessionReady() {
-        //Use for Screen Sharing
-    }
-
-    override fun callMissed() {
-        mListener?.onCallMissed()
+        when (registerResponse.registrationStatus) {
+            RegistrationStatus.REGISTER_SUCCESS -> {
+                val userModel: LoginResponse? = prefs.loginInfo
+                userModel?.mcToken = registerResponse.mcToken.toString()
+                runOnUiThread {
+                    userModel?.let {
+                        prefs.loginInfo = it
+                    }
+                    binding.root.showSnackBar("Socket Connected!")
+                }
+            }
+            RegistrationStatus.UN_REGISTER,
+            RegistrationStatus.REGISTER_FAILURE,
+            RegistrationStatus.INVALID_REGISTRATION -> {
+                Handler(Looper.getMainLooper()).post {
+                    Log.e("register", "message: ${registerResponse.responseMessage}")
+                }
+            }
+        }
     }
     
     
     // Stream callbacks
     override fun onRemoteStream(stream: VideoTrack, refId: String, sessionID: String) {
+        remoteStream = stream
         mListener?.onRemoteStreamReceived(stream, refId, sessionID)
     }
 
     override fun onCameraStream(stream: VideoTrack) {
         localStream = stream
         mListener?.onCameraStreamReceived(stream)
+    }
+
+    override fun onRemoteStream(refId: String, sessionID: String) {
+//        mListener?.onRemoteStreamReceived()
     }
 
 }

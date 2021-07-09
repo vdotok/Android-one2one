@@ -10,9 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ObservableField
 import androidx.navigation.Navigation
+import com.norgic.callsdks.CallClient
+import com.norgic.callsdks.enums.MediaType
+import com.norgic.callsdks.models.CallParams
 import com.norgic.vdotokcall.R
 import com.norgic.vdotokcall.databinding.LayoutAllUserListBinding
-import com.norgic.vdotokcall.extensions.*
+import com.norgic.vdotokcall.extensions.hide
+import com.norgic.vdotokcall.extensions.show
+import com.norgic.vdotokcall.extensions.showSnackBar
+import com.norgic.vdotokcall.extensions.toggleVisibility
 import com.norgic.vdotokcall.feature.account.ui.AccountActivity
 import com.norgic.vdotokcall.feature.dashBoard.adapter.AllUserListAdapter
 import com.norgic.vdotokcall.feature.dashBoard.adapter.OnItemClickCallback
@@ -25,14 +31,13 @@ import com.norgic.vdotokcall.network.Result
 import com.norgic.vdotokcall.network.RetrofitBuilder
 import com.norgic.vdotokcall.prefs.Prefs
 import com.norgic.vdotokcall.utils.ApplicationConstants
+import com.norgic.vdotokcall.utils.ApplicationConstants.CALL_PARAMS
 import com.norgic.vdotokcall.utils.isInternetAvailable
 import com.norgic.vdotokcall.utils.safeApiCall
-import com.norgic.callsdk.enums.MediaType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.webrtc.VideoTrack
 import retrofit2.HttpException
 
 class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
@@ -48,23 +53,26 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
     private var userName = ObservableField<String>()
 
     private var userList: List<UserModel> = ArrayList()
+    private lateinit var callClient: CallClient
+
+    private var viewLayout: View? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
 
-        binding = LayoutAllUserListBinding.inflate(inflater, container, false)
-        prefs = Prefs(activity)
+        if (viewLayout == null) {
+            binding = LayoutAllUserListBinding.inflate(inflater, container, false)
+            prefs = Prefs(activity)
 
-        //(activity as DashBoardActivity).mListener = this
-
-        init()
-        textListenerForSearch()
-        getAllUsers()
-        addPullToRefresh()
-
-        return binding.root
+            init()
+            textListenerForSearch()
+            getAllUsers()
+            addPullToRefresh()
+            viewLayout = binding.root
+        }
+        return viewLayout!!
     }
 
     private fun init() {
@@ -72,6 +80,10 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
 
         binding.search = edtSearch
         binding.username = userName
+
+        CallClient.getInstance(activity as Context)?.let {
+            callClient = it
+        }
 
         edtSearch.set("")
 
@@ -89,6 +101,7 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
     private fun addPullToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             getAllUsers()
+            (activity as DashBoardActivity).connectClient()
         }
     }
 
@@ -186,6 +199,15 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
 
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (callClient.isConnected() == true) {
+            binding.tvLed.setImageResource(R.drawable.led_connected)
+        } else {
+            binding.tvLed.setImageResource(R.drawable.led_error)
+        }
+    }
+
     override fun searchResult(position: Int) {
         edtSearch.get()?.isNotEmpty()?.let {
             if (position == 0 && it){
@@ -199,8 +221,6 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
     }
 
     companion object {
-
-        const val TAG_FRAGMENT_USER_LIST = "TAG_FRAGMENT_USER_LIST"
         const val API_ERROR = "API_ERROR"
         const val IS_VIDEO_CALL = "IS_VIDEO_CALL"
 
@@ -217,11 +237,6 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
         }
     }
 
-
-    override fun onStartCalling() {
-        Log.d(TAG_FRAGMENT_USER_LIST,"")
-    }
-
     override fun outGoingCall(toPeer: String) {
         activity?.let {
             it.runOnUiThread {
@@ -230,23 +245,35 @@ class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
         }
     }
 
-    override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {
-        Log.d(TAG_FRAGMENT_USER_LIST,"")
-    }
+    override fun onAcceptIncomingCall(callParams: CallParams) {
 
-    override fun onCameraStreamReceived(stream: VideoTrack) {
-        Log.d(TAG_FRAGMENT_USER_LIST,"")
+        activity?.runOnUiThread {
+            callParams.mcToken = prefs.loginInfo?.mcToken!!
+            userReceiver = userList.find { it.refId == callParams.refId }
+            val bundle = Bundle()
+            bundle.putString("userName",userReceiver?.fullName)
+            bundle.putParcelable(CALL_PARAMS, callParams)
+            bundle.putBoolean("isIncoming",true)
+            Navigation.findNavController(binding.root).navigate(R.id.action_open_audio_fragment, bundle)
+        }
     }
 
     override fun onCallMissed() {}
 
-    override fun onCallRejected(reason: String) {}
+    override fun onCallRejected() {}
 
     override fun endOngoingCall(sessionId: String) {}
 
     override fun onAudioVideoStateChanged(audioState: Int, videoState: Int) {}
 
     override fun onInternetConnectionLoss() {}
+    override fun onConnectionSuccess() {
+        binding.tvLed.setImageResource(R.drawable.led_connected)
+    }
+
+    override fun onConnectionFail() {
+        binding.tvLed.setImageResource(R.drawable.led_error)
+    }
 
 }
 

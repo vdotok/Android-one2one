@@ -43,17 +43,6 @@
         android:label="voiceFragment"
         tools:layout="@layout/layout_audio_fragment">
 
-        <action
-            android:id="@+id/action_open_userList"
-            app:destination="@id/allUsersListFragment"
-            app:enterAnim="@anim/slide_item_from_right"
-            app:exitAnim="@anim/slide_item_to_left"
-            app:popUpTo="@id/allUsersListFragment"
-            app:popUpToInclusive="true"
-            app:launchSingleTop="true" />
-
-
-
     </fragment>
 
 </navigation>

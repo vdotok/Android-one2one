@@ -1,5 +1,6 @@
 package com.norgic.vdotokcall.interfaces
 
+import com.norgic.callsdks.models.CallParams
 import com.norgic.vdotokcall.models.AcceptCallModel
 import org.webrtc.VideoTrack
 
@@ -13,8 +14,14 @@ interface FragmentRefreshListener {
     fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String)
     fun onCameraStreamReceived(stream: VideoTrack)
     fun onCallMissed()
-    fun onCallRejected(reason: String)
+    fun onCallRejected()
     fun endOngoingCall(sessionId: String)
     fun onAudioVideoStateChanged(audioState: Int, videoState: Int)
     fun onInternetConnectionLoss()
+    fun onAcceptIncomingCall(callParams: CallParams)
+    fun onConnectionSuccess() {}
+    fun onConnectionFail() {}
+    fun onCallNoAnswer()
+    fun onCallBusy()
+    fun onCallTimeout() {}
 }

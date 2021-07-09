@@ -109,7 +109,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:elevation="10dp"
-            app:cardCornerRadius="10dp"
+            app:cardCornerRadius="0dp"
             app:layout_constraintBottom_toTopOf="@+id/bottomBar"
             app:layout_constraintEnd_toEndOf="parent"
             android:visibility="@{isVideoCall ? View.VISIBLE : View.GONE}">

@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +12,9 @@ import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.navigation.Navigation
+import com.norgic.callsdks.CallClient
+import com.norgic.callsdks.enums.MediaType
+import com.norgic.callsdks.models.CallParams
 import com.norgic.vdotokcall.R
 import com.norgic.vdotokcall.databinding.LayoutCallRecieverBinding
 import com.norgic.vdotokcall.extensions.hide
@@ -20,10 +24,9 @@ import com.norgic.vdotokcall.interfaces.FragmentRefreshListener
 import com.norgic.vdotokcall.models.AcceptCallModel
 import com.norgic.vdotokcall.models.UserModel
 import com.norgic.vdotokcall.prefs.Prefs
+import com.norgic.vdotokcall.utils.ApplicationConstants.CALL_PARAMS
 import com.norgic.vdotokcall.utils.performSingleClick
-import com.norgic.callsdk.CallClient
-import com.norgic.callsdk.enums.MediaType
-import org.webrtc.VideoTrack
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -33,11 +36,13 @@ import org.webrtc.VideoTrack
 class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefreshListener {
 
 
+    private var countDownTimer: CountDownTimer? = null
+    private var isFragmentOpen = true
     private lateinit var binding: LayoutCallRecieverBinding
     private var userModel : UserModel? = null
     var username : String? = null
 
-    private var acceptCallModel : AcceptCallModel? = null
+    private var callParams : CallParams? = null
     private var isVideoCall: Boolean = false
 
     private var userName : ObservableField<String> = ObservableField<String>()
@@ -90,7 +95,7 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
             isIncomingCall.set(arguments?.get("isIncoming") as Boolean)
         } ?: kotlin.run{
             username = arguments?.get("userName") as String?
-            acceptCallModel = arguments?.get(AcceptCallModel.TAG) as AcceptCallModel?
+            callParams = arguments?.get(CALL_PARAMS) as CallParams?
             isIncomingCall.set(arguments?.get("isIncoming") as Boolean)
         }
     }
@@ -110,15 +115,15 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
     }
 
     private fun setDataForIncomingCall() {
+        startCountDownForIncomingCall()
 
         playTone()
 
         userName.set(username)
 
 
-        when (acceptCallModel?.mediaType) {
+        when (callParams?.mediaType) {
             MediaType.AUDIO -> {
-
                 incomingCallTitle.set(getString(R.string.incoming_call))
             }
             else -> {
@@ -127,26 +132,45 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
         }
 
         binding.imgCallAccept.performSingleClick {
-           openAudioCallFragment()
+            openAudioCallFragment()
+            disposeCountDownTimer()
         }
 
         binding.imgCallReject.performSingleClick {
+            disposeCountDownTimer()
             prefs.loginInfo?.let {
-                acceptCallModel?.let { it1 -> callClient.rejectIncomingCall(
+                callParams?.let { it1 -> callClient.rejectIncomingCall(
                     it.refId!!,
                     it1.sessionUUID
                 )
                 }
             }
-            (activity as DashBoardActivity).endCall()
             activity?.onBackPressed()
         }
+    }
+
+    private fun disposeCountDownTimer() {
+        countDownTimer?.cancel()
+        countDownTimer = null
+    }
 
 
+    private fun startCountDownForIncomingCall(){
+        countDownTimer = object : CountDownTimer(TimeUnit.SECONDS.toMillis(20), TimeUnit.SECONDS.toMillis(10)) {
+            override fun onTick(millisUntilFinished: Long) {}
+            override fun onFinish() {
+                sendCallTimeOut()
+            }
+        }.start()
+    }
+
+    private fun sendCallTimeOut() {
+        callClient.callTimeout(prefs.loginInfo?.refId!!, callParams?.sessionUUID!!)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
+        disposeCountDownTimer()
         stopTune()
     }
 
@@ -166,18 +190,8 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
 
     private fun openAudioCallFragment() {
 
-        acceptCallModel?.let {
-
-            (activity as DashBoardActivity).acceptIncomingCall(
-                it.from,
-                it.sessionUUID,
-                it.requestID,
-                it.deviceType,
-                it.mediaType,
-                it.sessionType
-            )
-
-
+        callParams?.let {
+            (activity as DashBoardActivity).acceptIncomingCall(it)
             openCallFragment()
         }
     }
@@ -185,7 +199,7 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
 
      private fun getDefaultRingtone(context: Context) :Ringtone {
             val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-            return RingtoneManager.getRingtone(context,uri)
+            return RingtoneManager.getRingtone(context, uri)
         }
 
 
@@ -194,15 +208,10 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
         bundle.putString("userName", userName.get())
         bundle.putBoolean(
             AllUserListFragment.IS_VIDEO_CALL,
-            acceptCallModel?.mediaType == MediaType.VIDEO
+            callParams?.mediaType == MediaType.VIDEO
         )
-        bundle.putParcelable(AcceptCallModel.TAG, acceptCallModel)
+        bundle.putParcelable(AcceptCallModel.TAG, callParams)
         Navigation.findNavController(binding.root).navigate(R.id.action_open_call_fragment, bundle)
-    }
-
-
-    override fun onIncomingCall(model: AcceptCallModel) {
-
     }
 
     override fun onStartCalling() {
@@ -220,33 +229,38 @@ class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefres
         }
     }
 
-    override fun outGoingCall(toPeer: String) {
-
+    override fun onCallRejected() {
+        closeFragmentWithMessage("Call rejected")
     }
-
-    override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {}
-
-    override fun onCameraStreamReceived(stream: VideoTrack) {}
-
-    override fun onCallRejected(reason: String) {
-        closeFragmentWithMessage(reason)
-    }
-
-    override fun endOngoingCall(sessionId: String) {}
-
-    override fun onAudioVideoStateChanged(audioState: Int, videoState: Int) {}
-
-    override fun onInternetConnectionLoss() {}
 
     override fun onCallMissed() {
-       closeFragmentWithMessage("call missed!")
+       closeFragmentWithMessage("Call missed")
+    }
+
+    override fun endOngoingCall(sessionId: String) {
+        closeFragmentWithMessage("Call ended")
+    }
+
+    override fun onCallNoAnswer() {
+        closeFragmentWithMessage("No answer")
+    }
+
+    override fun onCallBusy() {
+        closeFragmentWithMessage("User busy")
+    }
+
+    override fun onCallTimeout() {
+        closeFragmentWithMessage("Call timeout")
     }
 
 
     private fun closeFragmentWithMessage(message: String){
-        activity?.runOnUiThread {
-            Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-            activity?.onBackPressed()
+        if(isFragmentOpen) {
+            activity?.runOnUiThread {
+                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                activity?.onBackPressed()
+            }
+            isFragmentOpen = false
         }
     }
 }

@@ -1,9 +1,9 @@
 package com.norgic.vdotokcall.models
 
 import android.os.Parcelable
-import com.norgic.callsdk.enums.CallType
-import com.norgic.callsdk.enums.MediaType
-import com.norgic.callsdk.enums.SessionType
+import com.norgic.callsdks.enums.CallType
+import com.norgic.callsdks.enums.MediaType
+import com.norgic.callsdks.enums.SessionType
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
