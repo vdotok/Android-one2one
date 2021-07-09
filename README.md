@@ -23,7 +23,7 @@ To Download Chat Lib
 
 Code setup
 * Open Android Studio
-* Click on “Get from Version Control”
+* Click on “Get from Version Control” or if you dont see the welcome page then go to file new and select "Project From Version Control"
 * Select “Repository URL” from left menu
 * Select “Git” from Version control dropdown menu
 * Paste this URL "https://github.com/vdotok/Android-one2one.git" in URL section
