@@ -9,7 +9,7 @@ Requirements
 * Android SDKs 21(Lollipop) or later
     * For downloading Android SDKs
     * Open Android Studio
-    * Goto file menu Tools and select “SDK Manager”
+    * Goto file menu Tools and select “<b>SDK Manager</b>”
     * Checkmark api level 21 and onward 
     * click apply and download respective packages
 
@@ -18,15 +18,15 @@ Project Signup and Project ID
 * https://www.kuchtohoga.com/norgic/callSDK/
 
 To Download Chat Lib
-* Follow the link below and download “norgic-callsdk-v1.0.0.aar” file
+* Follow the link below and download “<b>norgic-callsdk-v1.0.0.aar</b>” file
 * https://sdk.vdotok.com/Android-SDKs/
 
 Code setup
 * Open Android Studio
-* Click on “Get from Version Control” or if you dont see the welcome page then go to file new and select "Project From Version Control"
-* Select “Repository URL” from left menu
-* Select “Git” from Version control dropdown menu
-* Paste this URL "https://github.com/vdotok/Android-one2one.git" in URL section
+* Click on “<b>Get from Version Control</b>” or if you dont see the welcome page then go to file new and select "<b>Project From Version Control</b>"
+* Select “<b>Repository URL</b>” from left menu
+* Select “<b>Git</b>” from Version control dropdown menu
+* Paste this URL "<b>https://github.com/vdotok/Android-one2one.git</b>" in URL section
 * click on clone button and wait for build .gradle files you can see the progress on bottom of android studio
 * let the android studio install the components, 
 * Hurrraaaa you Just configure the project in android studio
@@ -39,17 +39,17 @@ Device Setting
 
 Configure Lib
 * From Android Studio file menu click on File->New->New Module-> Import .JAR/.AAR Package and click on next
-* Select downloaded “norgic-callsdk-v1.0.0.aar” .AAR file and click Finish
+* Select downloaded “<b>norgic-callsdk-v1.0.0.aar</b>” .AAR file and click Finish
 * From Android Studio File Explorer  select project 
 <img width="498" alt="123636395-41e08980-d836-11eb-8643-429d6e5510d5" src="https://user-images.githubusercontent.com/86282129/123811571-cb628b00-d90c-11eb-9584-b5a8f12957dc.png">
 
 * And then go to vdotok-call -> app -> src -> build.gradle and past following line in Dependencies  section
-* “implementation project(path: ':norgic-callsdk-v1.0.0’)”
+* “<b>implementation project(path: ':norgic-callsdk-v1.0.0')</b>”
 
 <img width="798" alt="Screenshot 2021-06-29 at 6 59 02 PM" src="https://user-images.githubusercontent.com/86282129/123811034-542cf700-d90c-11eb-8294-04a1a9d858c5.png">
 
-* Click on “sync now” Button from top right corner
-* From File explorer open chattApp -> app -> src -> main -> java -> com -> norgic -> vdotokchat -> utils -> ApplicationConstants replace “SDK_PROJECT_ID” with your own Project Id 
+* Click on “<b>sync now</b>” Button from top right corner
+* From File explorer open chattApp -> app -> src -> main -> java -> com -> norgic -> vdotokchat -> utils -> ApplicationConstants replace “<b>SDK_PROJECT_ID</b>” with your own Project Id 
 
 Build Project 
 * Connect your phone with system in file sharing mode
