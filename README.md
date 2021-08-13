@@ -15,7 +15,7 @@ Requirements
 
 Project Signup and Project ID
 * Follow the link below register your self for chat server and get the project Id
-* https://www.kuchtohoga.com/norgic/callSDK/
+* https://www.vdotok.com/
 
 To Download Chat Lib
 * Follow the link below and download “<b>norgic-callsdk-v1.0.0.aar</b>” file
