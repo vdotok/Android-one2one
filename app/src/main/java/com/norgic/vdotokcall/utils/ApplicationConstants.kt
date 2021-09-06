@@ -7,20 +7,15 @@ package com.norgic.vdotokcall.utils
  */
 object ApplicationConstants {
 
-    const val API_BASE_URL: String = "https://tenant-api.vdotok.com/"
-    const val SDK_AUTH_BASE_URL: String = "https://vtkapi.vdotok.com"
+    const val API_BASE_URL: String = "https://tenant-api.vdotok.dev/"
     const val API_VERSION: String = "v0/"
 
 //    SDK AUTH PARAMS
-    const val SDK_API_KEY: String = "3d9686b635b15b5bc2d19800407609fa"
-    const val SDK_PROJECT_ID: String = "Add your own project key here"
+    const val SDK_PROJECT_ID: String = "Enter your provided project ID"
 
 
     //    Prefs constants
-    const val isLogin = "isLogin"
     const val LOGIN_INFO = "savedLoginInfo"
-    const val GROUP_MODEL_KEY = "group_model_key"
-    const val SDK_AUTH_RESPONSE = "SDK_AUTH_RESPONSE"
 
     const val CALL_PARAMS = "CALL_PARAMS"
 

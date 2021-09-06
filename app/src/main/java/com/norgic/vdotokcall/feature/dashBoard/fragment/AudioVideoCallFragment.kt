@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.isVisible
 import androidx.databinding.ObservableBoolean
@@ -92,7 +93,7 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
         setListeners()
         addLocalCameraStream()
         addRemoteVideoStreamForEchoTesting()
-        addTouchEventListener()
+//        addTouchEventListener()
         screenWidth = context?.resources?.displayMetrics?.widthPixels!!
         screenHeight = context?.resources?.displayMetrics?.heightPixels!!
     }
@@ -150,23 +151,19 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
                 isVideoResume -> {
                     binding.localViewCard.show()
                     binding.localView.show()
-                    callClient.resumeVideo(AudioVideoStateSwitchParams(
+                    callClient.resumeVideo(
                         sessionKey = sessionId,
-                        ownRefId = prefs.loginInfo?.refId!!,
-                        audioState = 1,
-                        videoState = if (isVideoResume) 1 else 0
-                    ))
+                        refId = prefs.loginInfo?.refId!!
+                    )
                     binding.ivCameraOnOff.setImageResource(R.drawable.ic_call_video_rounded)
                 }
                 else -> {
                     binding.localViewCard.hide()
                     binding.localView.hide()
-                    callClient.pauseVideo(AudioVideoStateSwitchParams(
+                    callClient.pauseVideo(
                         sessionKey = sessionId,
-                        ownRefId = prefs.loginInfo?.refId!!,
-                        audioState = 1,
-                        videoState = if (isVideoResume) 1 else 0
-                    ))
+                        refId = prefs.loginInfo?.refId!!
+                    )
                     binding.ivCameraOnOff.setImageResource(R.drawable.ic_video_off)
                 }
             }
@@ -200,12 +197,10 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
         }
 
         (activity as DashBoardActivity).activeSessionId?.let { sessionId ->
-            callClient.muteUnMuteMic(AudioVideoStateSwitchParams(
+            callClient.muteUnMuteMic(
                 sessionKey = sessionId,
-                ownRefId = prefs.loginInfo?.refId!!,
-                audioState = if (callClient.isMute(sessionId)) 1 else 0,
-                videoState = if (isVideoCall.get()) 1 else 0
-            ))
+                refId = prefs.loginInfo?.refId!!
+            )
         }
     }
 
@@ -351,8 +346,15 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
         (activity as DashBoardActivity).endCall()
     }
 
+    var isInit = false
 
     override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {
+        if (isInit)
+            return
+
+        Log.e("one-one", "onRemoteStreamReceived: stream: "+ stream.toString())
+
+        isInit = true
         val mainHandler = activity?.mainLooper?.let { Handler(it) }
         val myRunnable = Runnable {
 
@@ -381,6 +383,8 @@ class AudioVideoCallFragment : CallMangerListenerFragment(), FragmentRefreshList
     }
 
     override fun onCameraStreamReceived(stream: VideoTrack) {
+
+        Log.e("one-one", "onRemoteStreamReceived: onCameraStreamReceived: "+ stream.toString())
 
         val mainHandler = activity?.let { Handler(it.mainLooper) }
         val myRunnable = Runnable {

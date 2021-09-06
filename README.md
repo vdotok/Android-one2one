@@ -31,11 +31,9 @@ Code setup
 * let the android studio install the components, 
 * Hurrraaaa you Just configure the project in android studio
 
-Device Setting
-* In order to connect you device with android studio you need to enable developer mode
-* For enabling developer mode and usb debug you may follow the device specific steps
-* you can follow the step described in link below to enable developer options and usb debugging
-* https://developer.android.com/studio/debug/dev-options
+To Download Call Lib
+* Follow the link below and download “<b>norgic-callsdk-v1.0.0.aar</b>” file
+* https://sdk.vdotok.com/Android-SDKs/
 
 Configure Lib
 * From Android Studio file menu click on File->New->New Module-> Import .JAR/.AAR Package and click on next
@@ -57,4 +55,10 @@ Build Project
 * select your device and click on Play button
 * After running some automated commands and building gradle your app will install on you connected device
 <img width="1012" alt="Screenshot 2021-06-29 at 6 59 36 PM" src="https://user-images.githubusercontent.com/86282129/123811062-5bec9b80-d90c-11eb-96e1-ee50dee125c5.png">
+
+Device Setting
+* In order to connect you device with android studio you need to enable developer mode
+* For enabling developer mode and usb debug you may follow the device specific steps
+* you can follow the step described in link below to enable developer options and usb debugging
+* https://developer.android.com/studio/debug/dev-options
 

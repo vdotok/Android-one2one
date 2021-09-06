@@ -2,7 +2,6 @@ package com.norgic.vdotokcall.network
 
 import android.content.Context
 import com.norgic.vdotokcall.utils.ApplicationConstants.API_BASE_URL
-import com.norgic.vdotokcall.utils.ApplicationConstants.SDK_AUTH_BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -44,23 +43,23 @@ object RetrofitBuilder {
             .create(ApiService::class.java)
     }
 
-    fun makeSdkAuthRetrofitService(context: Context): ApiService {
-        val interceptor = HttpLoggingInterceptor()
-        interceptor.level = HttpLoggingInterceptor.Level.BODY
-
-        val clientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
-        clientBuilder.addInterceptor(interceptor)
-        setSSLCert(context, clientBuilder)
-
-        val client = clientBuilder.build()
-
-        return Retrofit.Builder()
-            .baseUrl(SDK_AUTH_BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
-            .create(ApiService::class.java)
-    }
+//    fun makeSdkAuthRetrofitService(context: Context): ApiService {
+//        val interceptor = HttpLoggingInterceptor()
+//        interceptor.level = HttpLoggingInterceptor.Level.BODY
+//
+//        val clientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
+//        clientBuilder.addInterceptor(interceptor)
+//        setSSLCert(context, clientBuilder)
+//
+//        val client = clientBuilder.build()
+//
+//        return Retrofit.Builder()
+//            .baseUrl(SDK_AUTH_BASE_URL)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .client(client)
+//            .build()
+//            .create(ApiService::class.java)
+//    }
 
     private fun setSSLCert(context: Context, httpClient: OkHttpClient.Builder) {
         // Load CAs from an InputStream
@@ -103,7 +102,7 @@ object RetrofitBuilder {
     }
 
     private fun getCertificateFileName(): String {
-        return "vdotok_com.crt"
+        return "vdotok_dev.crt"
     }
 
 }

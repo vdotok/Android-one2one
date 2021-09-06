@@ -27,14 +27,5 @@ interface ApiService {
 
     @POST("API/v0/AllUsers")
     suspend fun getAllUsers(@Header("Authorization") auth_token: String): Response<GetAllUsersResponseModel>
-//
-//    @GET("API/v0/AllGroups")
-//    suspend fun getAllGroups(@Header("Authorization") auth_token: String): Response<AllGroupsResponse>
-//
-//    @POST("API/v0/CreateGroup")
-//    suspend fun createGroup(@Header("Authorization") auth_token: String, @Body model: CreateGroupModel): Response<AllGroupsResponse>
-
-    @POST("API/v0/AuthenticateSDK")
-    suspend fun authSDK(@Body model: AuthenticationRequest): Response<AuthenticationResponse>
 
 }

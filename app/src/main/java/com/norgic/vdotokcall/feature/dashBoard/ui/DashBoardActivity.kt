@@ -21,7 +21,8 @@ import com.norgic.callsdks.commands.RegisterResponse
 import com.norgic.callsdks.enums.*
 import com.norgic.callsdks.interfaces.CallSDKListener
 import com.norgic.callsdks.interfaces.StreamCallback
-import com.norgic.callsdks.models.CallParams
+import com.norgic.callsdks.models.*
+import com.norgic.callsdks.stats.StatsInterface
 import com.norgic.vdotokcall.R
 import com.norgic.vdotokcall.databinding.ActivityDashBoardBinding
 import com.norgic.vdotokcall.extensions.showSnackBar
@@ -34,7 +35,7 @@ import com.norgic.vdotokcall.utils.NetworkStatusLiveData
 import org.webrtc.VideoTrack
 
 
-class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
+class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, StatsInterface {
 
     private lateinit var binding: ActivityDashBoardBinding
 
@@ -114,7 +115,7 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
         CallClient.getInstance(this)?.setConstants(ApplicationConstants.SDK_PROJECT_ID)
         CallClient.getInstance(this)?.let {
             callClient = it
-            callClient.setListener(this, this)
+            callClient.setListener(this, this, this)
         }
         
         connectClient()
@@ -123,9 +124,9 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
 
 
     fun connectClient() {
-        prefs.sdkAuthResponse?.let {
+        prefs.loginInfo?.mediaServerMap?.let {
             if (callClient.isConnected() == null || callClient.isConnected() == false)
-                callClient.connect(getMediaServerAddress(it.mediaServerMap), it.mediaServerMap.endPoint)
+                callClient.connect(getMediaServerAddress(it), it.endPoint)
         }
     }
 
@@ -149,19 +150,31 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
     }
 
 
-    override fun onConnect() {
-        runOnUiThread { binding.root.showSnackBar("Connected!") }
-    }
+//    override fun onConnect() {
+//        runOnUiThread { binding.root.showSnackBar("Connected!") }
+//    }
 
     override fun onError(cause: String) {
 //        connectClient()
     }
 
-    override fun onSessionReady(mediaProjection: MediaProjection?) {
+    override fun onPublicURL(publicURL: String) {
+//        TODO("Not yet implemented")
     }
 
-    override fun audioVideoState(audioState: Int, videoState: Int, refId: String) {
-        mListener?.onAudioVideoStateChanged(audioState, videoState)
+
+    override fun onSessionReady(mediaProjection: MediaProjection?,
+                                isInternalAudioIncluded: Boolean) {}
+
+    override fun participantCount(participantCount: Int) {
+//        TODO("Not yet implemented")
+    }
+
+    override fun audioVideoState(state: SessionStateInfo) {
+        runOnUiThread {
+            mListener?.onAudioVideoStateChanged(state.audioState!!, state.videoState!!)
+        }
+
     }
 
     override fun callStatus(callInfoResponse: CallInfoResponse) {
@@ -276,19 +289,13 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
         localStream = null
         remoteStream = null
         activeSessionId?.let {
-            callClient.endCallSession(it)
+            callClient.endCallSession(arrayListOf(it))
         }
     }
-
-    override fun invalidResponse(message: String) {}
 
     // when socket is disconnected
     override fun onClose(reason: String) {
         connectClient()
-    }
-
-    override fun responseMessages(message: String) {
-        runOnUiThread { Toast.makeText(this, "Response: $message", Toast.LENGTH_SHORT).show() }
     }
 
     override fun incomingCall(callParams: CallParams) {
@@ -321,8 +328,12 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
             }
         }
     }
-    
-    
+
+    override fun sessionEndedData(callParams: CallParams) {
+        // on each session ended to reset UI or else
+    }
+
+
     // Stream callbacks
     override fun onRemoteStream(stream: VideoTrack, refId: String, sessionID: String) {
         remoteStream = stream
@@ -336,6 +347,35 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback {
 
     override fun onRemoteStream(refId: String, sessionID: String) {
 //        mListener?.onRemoteStreamReceived()
+    }
+
+    override fun memoryUsageDetails(memoryUsage: Long) {
+//        TODO("Not yet implemented")
+    }
+
+    override fun sendCurrentDataUsage(sessionKey: String, usage: Usage) {
+        prefs.loginInfo?.refId?.let { refId ->
+            Log.e("statsSdk", "currentSentUsage: ${usage.currentSentBytes}, currentReceivedUsage: ${usage.currentReceivedBytes}")
+            callClient.sendEndCallLogs(
+                refId = refId,
+                sessionKey = sessionKey,
+                stats = PartialCallLogs(
+                    upload_bytes = usage.currentSentBytes.toString(),
+                    download_bytes = usage.currentReceivedBytes.toString()
+                )
+            )
+        }
+    }
+
+    override fun sendEndDataUsage(sessionKey: String, sessionDataModel: SessionDataModel) {
+        prefs.loginInfo?.refId?.let { refId ->
+            Log.e("statsSdk", "sessionData: $sessionDataModel")
+            callClient.sendEndCallLogs(
+                refId = refId,
+                sessionKey = sessionKey,
+                stats = sessionDataModel
+            )
+        }
     }
 
 }

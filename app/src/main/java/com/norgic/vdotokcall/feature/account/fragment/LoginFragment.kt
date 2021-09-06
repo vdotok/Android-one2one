@@ -14,6 +14,7 @@ import com.norgic.vdotokcall.databinding.LayoutFragmentLoginBinding
 import com.norgic.vdotokcall.extensions.*
 import com.norgic.vdotokcall.feature.dashBoard.ui.DashBoardActivity.Companion.createDashBoardActivity
 import com.norgic.vdotokcall.models.LoginUserModel
+import com.norgic.vdotokcall.models.UtilsModel
 import com.norgic.vdotokcall.network.HttpResponseCodes
 import com.norgic.vdotokcall.network.RetrofitBuilder
 import com.norgic.vdotokcall.prefs.Prefs
@@ -103,7 +104,7 @@ class LoginFragment: Fragment() {
 
                         when {
                             response is Result.Success && response.data.status == HttpResponseCodes.SUCCESS.value -> {
-                                prefs.loginInfo = response.data
+                                prefs.loginInfo = UtilsModel.updateServerUrls(response.data)
                                 startActivity(createDashBoardActivity(it))
                             }
                             response is Result.Error -> {

@@ -71,4 +71,17 @@ class LoginResponse {
     var authorizationToken: String? = null
 
     var mcToken: String? = null
+
+    @SerializedName("media_server")
+    var mediaServer: String?= null
+
+    @SerializedName("media_server_map")
+    var mediaServerMap: MediaServerMap?= null
+
+    @SerializedName("messaging_server_map")
+    val messagingServerMap: MessagingServerMap?= null
+
+    @SerializedName("messaging_server")
+    var messagingServer: String?= null
+
 }

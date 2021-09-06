@@ -17,6 +17,7 @@ import com.norgic.vdotokcall.feature.dashBoard.ui.DashBoardActivity
 import com.norgic.vdotokcall.models.CheckUserModel
 import com.norgic.vdotokcall.models.LoginResponse
 import com.norgic.vdotokcall.models.SignUpModel
+import com.norgic.vdotokcall.models.UtilsModel
 import com.norgic.vdotokcall.network.HttpResponseCodes
 import com.norgic.vdotokcall.network.Result
 import com.norgic.vdotokcall.network.RetrofitBuilder
@@ -163,7 +164,7 @@ class SignUpFragment: Fragment() {
     private fun handleSignUpResponse(loginResponse: LoginResponse) {
         when(loginResponse.status) {
             HttpResponseCodes.SUCCESS.value -> {
-                prefs.loginInfo = loginResponse
+                prefs.loginInfo = UtilsModel.updateServerUrls(loginResponse)
                 activity?.let { startActivity(DashBoardActivity.createDashBoardActivity(it)) }
             }
             else -> {
