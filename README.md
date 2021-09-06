@@ -17,10 +17,6 @@ Project Signup and Project ID
 * Follow the link below register your self for chat server and get the project Id
 * https://www.vdotok.com/
 
-To Download Chat Lib
-* Follow the link below and download “<b>norgic-callsdk-v1.0.0.aar</b>” file
-* https://sdk.vdotok.com/Android-SDKs/
-
 Code setup
 * Open Android Studio
 * Click on “<b>Get from Version Control</b>” or if you dont see the welcome page then go to file new and select "<b>Project From Version Control</b>"
