@@ -13,10 +13,6 @@ Requirements
     * Checkmark api level 21 and onward 
     * click apply and download respective packages
 
-Project Signup and Project ID
-* Follow the link below register your self for chat server and get the project Id
-* https://www.vdotok.com/
-
 Code setup
 * Open Android Studio
 * Click on “<b>Get from Version Control</b>” or if you dont see the welcome page then go to file new and select "<b>Project From Version Control</b>"
@@ -39,11 +35,15 @@ Configure Lib
 
 * And then go to vdotok-call -> app -> src -> build.gradle and past following line in Dependencies  section
 * “<b>implementation project(path: ':norgic-callsdk-v1.0.0')</b>”
+* Click on “<b>sync now</b>” Button from top right corner
 
 <img width="798" alt="Screenshot 2021-06-29 at 6 59 02 PM" src="https://user-images.githubusercontent.com/86282129/123811034-542cf700-d90c-11eb-8294-04a1a9d858c5.png">
 
-* Click on “<b>sync now</b>” Button from top right corner
-* From File explorer open chattApp -> app -> src -> main -> java -> com -> norgic -> vdotokchat -> utils -> ApplicationConstants replace “<b>SDK_PROJECT_ID</b>” with your own Project Id 
+
+Project Signup and Project ID
+* Follow the link below register your self for call server and get the project Id
+* https://www.vdotok.com/
+* From File explorer open vdotok-call -> app -> src -> main -> java -> com -> norgic -> vdotokcall -> utils -> ApplicationConstants replace “<b>SDK_PROJECT_ID</b>” with your own Project Id 
 
 Build Project 
 * Connect your phone with system in file sharing mode
