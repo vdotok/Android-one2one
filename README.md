@@ -42,7 +42,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 * From file explorer <b>vdotok-call -> app -> src -> main -> java -> com -> norgic -> vdotokcall -> utils -> ApplicationConstants</b> replace <b>SDK_PROJECT_ID</b> with your own <b>Project Id</b>
 
 <b>Device Setting</b>
-* To connect a device, enable <b>“developer mode”</b> and <b>“USB debug”</b> by following the device-specific steps provided on the following link
+* To connect a device, enable <b>“developer mode”</b> and <b>“USB debugging”</b> by following the device-specific steps provided on the following link
 * https://developer.android.com/studio/debug/dev-options 
 
 <b>Build Project</b>
