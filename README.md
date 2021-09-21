@@ -8,8 +8,8 @@ IDE Installation & Build Guide
 * Android SDKs 21(Lollipop) or later
     * For downloading Android SDKs
     * Open Android Studio
-    * While on welcome page, Open <b>SDK Manager</b>
-    * On Android Studio 4.1 or onward, click on configure <img width="100" alt="Screenshot 2021-09-21 at 12 40 27 PM" src="https://user-images.githubusercontent.com/86282129/134131257-af72db7c-912d-47f3-9758-4de0479db9ca.png"> from right bottom and select <b>SDK Manager</b>
+    * While on the welcome page, Open <b>SDK Manager</b>
+    * On Android Studio 4.1 or onward, click on configure <img width="100" alt="Screenshot 2021-09-21 at 12 40 27 PM" src="https://user-images.githubusercontent.com/86282129/134131257-af72db7c-912d-47f3-9758-4de0479db9ca.png"> from the right bottom and select <b>SDK Manager</b>
     * For Android Studio 4.2 or onward, click on three dots <img width="19" alt="Screenshot 2021-09-21 at 12 35 14 PM" src="https://user-images.githubusercontent.com/86282129/134130491-4f77bf35-a845-4a07-b577-bb4f7df1195a.png"> from the top right cornor and select <b>SDK Manager</b>
     * In case the welcome page doesn't open, go to file menu <b>Tools -> SDK Manager</b>
     * Click all checkboxes from <b>API Level 21 and onward</b> 
@@ -21,7 +21,7 @@ IDE Installation & Build Guide
 * Select <b>Repository URL</b> from left menu
 * Select <b>Git</b> from <b>Version control</b> dropdown menu
 * Paste this URL <b>https://github.com/vdotok/Android-one2one.git</b> in URL section
-* Click on <b>Clone</b> button and wait for build.gradle. File you can see the progress at the bottom of <b>Android Studio</b>
+* Click on <b>Clone</b> button and wait for build.gradle file. You can see the progress at the bottom of <b>Android Studio</b>
 * Let the <b>Android Studio</b> install the components
 
 Bravo! You’ve successfully configured the project in Android Studio.
@@ -39,7 +39,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 
 <b>Project Signup and Project ID:</b>
 * Register for “Call Server” at [VdoTok](https://userpanel.vdotok.com/signup) and get the <b>Project ID</b>
-* From file explorer double click on <b>vdotok-call -> app -> src -> main -> java -> com -> norgic -> vdotokcall -> utils -> ApplicationConstants</b> replace <b>SDK_PROJECT_ID</b> with your own <b>Project Id</b>
+* From file explorer, double-click on <b>vdotok-call -> app -> src -> main -> java -> com -> norgic -> vdotokcall -> utils -> ApplicationConstants</b> replace <b>SDK_PROJECT_ID</b> with your own <b>Project Id</b>
 
 <b>Device Setting:</b>
 * To connect a device, enable <b>“developer mode”</b> and <b>“USB debugging”</b> by following the device-specific steps provided [here.](https://developer.android.com/studio/debug/dev-options) 
