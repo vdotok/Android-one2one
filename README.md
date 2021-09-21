@@ -48,7 +48,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 <b>Build Project</b>
 * Connect your phone with system in <b>File-sharing Mode</b>
 * You can find your phone name in running devices list as describe in below image
-* select your device and click on Play button<img width="24" alt="Screenshot 2021-09-21 at 1 19 15 PM" src="https://user-images.githubusercontent.com/86282129/134136764-72c0f47e-6ecb-4c62-a562-804b68042fe5.png">
+* Select your device and click on Play button<img width="24" alt="Screenshot 2021-09-21 at 1 19 15 PM" src="https://user-images.githubusercontent.com/86282129/134136764-72c0f47e-6ecb-4c62-a562-804b68042fe5.png">
 * After running some automated commands and building gradle, your app will be installed on your connected device
 <img width="1012" alt="Screenshot 2021-06-29 at 6 59 36 PM" src="https://user-images.githubusercontent.com/86282129/123811062-5bec9b80-d90c-11eb-96e1-ee50dee125c5.png">
 
