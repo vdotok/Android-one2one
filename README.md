@@ -11,9 +11,9 @@ IDE Installation & Build Guide
     * From the welcome page open <b>SDK Manager</b>
     * On Android Studio 4.1 or onward click on configure <img width="100" alt="Screenshot 2021-09-21 at 12 40 27 PM" src="https://user-images.githubusercontent.com/86282129/134131257-af72db7c-912d-47f3-9758-4de0479db9ca.png"> from right bottom and select <b>SDK Manager</b>
     * For Android Studio 4.2 or onward click on three dots <img width="19" alt="Screenshot 2021-09-21 at 12 35 14 PM" src="https://user-images.githubusercontent.com/86282129/134130491-4f77bf35-a845-4a07-b577-bb4f7df1195a.png"> from the top right cornor and select <b>SDK Manager</b>
-    * Or in the case welcome page doesn't open then goto file menu Tools and select <b>SDK Manager</b>
+    * Or in the case welcome page doesn't open then goto file menu <b>Tools -> SDK Manager</b>
     * Click All checkboxes from <b>API Level 21 and onward</b> 
-    * click <b>Apply</b> and download relevant packages
+    * Click <b>Apply</b> and download relevant packages
 
 <b>Code setup</b>
 * Open <b>Android Studio</b>
@@ -22,7 +22,7 @@ IDE Installation & Build Guide
 * Select <b>Git</b> from Version control dropdown menu
 * Paste this URL <b>https://github.com/vdotok/Android-one2one.git</b> in URL section
 * Click on <b>Clone</b> button and wait for build.gradle file you can see the progress on bottom of <b>Android Studio</b>
-* let the <b>Android Studio</b> install the components
+* Let the <b>Android Studio</b> install the components
 
 Bravo! You’ve successfully configured the project in Android Studio.
 
@@ -35,6 +35,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 
 * Go to <b>VdoTok-Call -> App -> libs</b>
 * Add the downloaded <b>norgic-callsdk-v1.0.0.aar</b> file in the libs folder
+<img width="333" alt="Screenshot 2021-09-21 at 1 28 49 PM" src="https://user-images.githubusercontent.com/86282129/134138144-af382294-6f65-4329-aed4-a258695abfca.png">
 
 <b>Project Signup and Project ID</b>
 * Register for “Call Server” at [VdoTok](https://userpanel.vdotok.com/signup) and get the <b>Project ID</b>
@@ -44,7 +45,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 * To connect a device, enable <b>“developer mode”</b> and <b>“USB debug”</b> by following the device-specific steps provided on the following link
 * https://developer.android.com/studio/debug/dev-options 
 
-Build Project
+<b>Build Project</b>
 * Connect your phone with system in <b>File-sharing Mode</b>
 * You can find your phone name in running devices list as describe in below image
 * select your device and click on Play button<img width="24" alt="Screenshot 2021-09-21 at 1 19 15 PM" src="https://user-images.githubusercontent.com/86282129/134136764-72c0f47e-6ecb-4c62-a562-804b68042fe5.png">
