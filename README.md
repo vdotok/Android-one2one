@@ -27,7 +27,7 @@ IDE Installation & Build Guide
 Bravo! You’ve successfully configured the project in Android Studio.
 
 <b>Download Call Lib:</b>
-* Go to: https://sdk.vdotok.com/Android-SDKs/ and download “<b>streamingSDK</b>” file
+* Go to: https://sdk.vdotok.com/Android-SDKs/ and download “<b>streamingSDK.aar</b>” file
 
 <b>Configure Lib:</b>
 * In <b> Android Studio File Explorer</b>, select <b>Project</b>
@@ -35,7 +35,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 
 * Go to <b>VdoTok-Call -> App -> libs</b>
 * Add the downloaded <b>streamingSDK.aar</b> file in the libs folder
-<img width="333" alt="Screenshot 2021-09-21 at 1 28 49 PM" src="https://user-images.githubusercontent.com/86282129/134138144-af382294-6f65-4329-aed4-a258695abfca.png">
+<img width="468" alt="Screenshot 2021-10-06 at 2 15 14 PM" src="https://user-images.githubusercontent.com/86282129/136174906-b6f0ba56-bb67-4680-8641-43fbc02de479.png">
 
 <b>Project Signup and Project ID:</b>
 * Register for “Call Server” at [VdoTok](https://userpanel.vdotok.com/signup) and get the <b>Project ID</b>
