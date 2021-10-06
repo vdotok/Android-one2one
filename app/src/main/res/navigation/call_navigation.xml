@@ -6,7 +6,7 @@
     app:startDestination="@id/allUsersListFragment">
     <fragment
         android:id="@+id/allUsersListFragment"
-        android:name="com.norgic.vdotokcall.feature.dashBoard.fragment.AllUserListFragment"
+        android:name="com.vdotok.one2one.feature.dashBoard.fragment.AllUserListFragment"
         android:label="allUsersListFragment"
         tools:layout="@layout/layout_all_user_list">
 
@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/dialFragment"
-        android:name="com.norgic.vdotokcall.feature.dashBoard.fragment.IncomingAndDialCallFragment"
+        android:name="com.vdotok.one2one.feature.dashBoard.fragment.IncomingAndDialCallFragment"
         android:label="dialFragment"
         tools:layout="@layout/layout_call_reciever">
 
@@ -39,7 +39,7 @@
 
     <fragment
         android:id="@+id/voiceFragment"
-        android:name="com.norgic.vdotokcall.feature.dashBoard.fragment.AudioVideoCallFragment"
+        android:name="com.vdotok.one2one.feature.dashBoard.fragment.AudioVideoCallFragment"
         android:label="voiceFragment"
         tools:layout="@layout/layout_audio_fragment">
 

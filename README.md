@@ -27,19 +27,19 @@ IDE Installation & Build Guide
 Bravo! You’ve successfully configured the project in Android Studio.
 
 <b>Download Call Lib:</b>
-* Go to: https://sdk.vdotok.com/Android-SDKs/ and download “<b>norgic-callsdk-v1.0.0.aar</b>” file
+* Go to: https://sdk.vdotok.com/Android-SDKs/ and download “<b>streamingSDK</b>” file
 
 <b>Configure Lib:</b>
 * In <b> Android Studio File Explorer</b>, select <b>Project</b>
 <img width="498" alt="123636395-41e08980-d836-11eb-8643-429d6e5510d5" src="https://user-images.githubusercontent.com/86282129/123811571-cb628b00-d90c-11eb-9584-b5a8f12957dc.png">
 
 * Go to <b>VdoTok-Call -> App -> libs</b>
-* Add the downloaded <b>norgic-callsdk-v1.0.0.aar</b> file in the libs folder
+* Add the downloaded <b>streamingSDK.aar</b> file in the libs folder
 <img width="333" alt="Screenshot 2021-09-21 at 1 28 49 PM" src="https://user-images.githubusercontent.com/86282129/134138144-af382294-6f65-4329-aed4-a258695abfca.png">
 
 <b>Project Signup and Project ID:</b>
 * Register for “Call Server” at [VdoTok](https://userpanel.vdotok.com/signup) and get the <b>Project ID</b>
-* From file explorer, double-click on <b>vdotok-call -> app -> src -> main -> java -> com -> norgic -> vdotokcall -> utils -> ApplicationConstants</b> replace <b>SDK_PROJECT_ID</b> with your own <b>Project Id</b>
+* From file explorer, double-click on <b>vdotok-call -> app -> src -> main -> java -> com -> vdotok -> one2one -> utils -> ApplicationConstants</b> replace <b>SDK_PROJECT_ID</b> with your own <b>Project Id</b>
 
 <b>Device Setting:</b>
 * To connect a device, enable <b>“developer mode”</b> and <b>“USB debugging”</b> by following the device-specific steps provided [here.](https://developer.android.com/studio/debug/dev-options) 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.norgic.vdotokcall">
+    package="com.vdotok.one2one">
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -23,14 +23,14 @@
         tools:targetApi="m">
 
         <activity
-            android:name=".feature.account.ui.AccountActivity"
+            android:name="com.vdotok.one2one.feature.account.ui.AccountActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AccountScreen" />
         <activity
-            android:name=".feature.dashBoard.ui.DashBoardActivity"
+            android:name="com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".feature.splash.ui.SplashActivity"
+            android:name="com.vdotok.one2one.feature.splash.ui.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AccountScreen">
             <intent-filter>

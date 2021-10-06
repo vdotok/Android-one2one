@@ -11,7 +11,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.norgic.vdotokcall"
+        applicationId "com.vdotok.one2one"
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
@@ -46,9 +46,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
-    implementation 'androidx.appcompat:appcompat:1.3.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.1'
+    implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     // Retrofit
@@ -56,6 +56,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.2.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'androidx.test:monitor:1.4.0'
+    androidTestImplementation 'junit:junit:4.13.2'
 
 
     //    fragment navigation
@@ -67,7 +69,4 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
 
     implementation 'androidx.preference:preference-ktx:1.1.1'
-
-    implementation 'com.neovisionaries:nv-websocket-client:2.9'
-
 }
