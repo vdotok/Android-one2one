@@ -7,9 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.ActivitySplashBinding
-import com.vdotok.one2one.prefs.Prefs
 import com.vdotok.one2one.feature.account.ui.AccountActivity.Companion.createAccountsActivity
 import com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity.Companion.createDashBoardActivity
+import com.vdotok.one2one.prefs.Prefs
 
 class SplashActivity : AppCompatActivity() {
 

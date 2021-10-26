@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: ./app/libs/streamingSDK.aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/31bbdcf0b55374b61d6b2e64afd5f029/jetified-streamingSDK/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/31bbdcf0b55374b61d6b2e64afd5f029/jetified-streamingSDK/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/31bbdcf0b55374b61d6b2e64afd5f029/jetified-streamingSDK/AndroidManifest.xml" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ab579bdd72dc5bb235feca9496937ab9/jetified-streamingSDK/jars/libs/classes-2.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ab579bdd72dc5bb235feca9496937ab9/jetified-streamingSDK/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ab579bdd72dc5bb235feca9496937ab9/jetified-streamingSDK/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/ab579bdd72dc5bb235feca9496937ab9/jetified-streamingSDK/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

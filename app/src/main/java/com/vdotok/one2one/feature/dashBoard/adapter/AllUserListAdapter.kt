@@ -101,8 +101,6 @@ class AllUserListAdapter(private val list: List<UserModel>, private val callback
         }
         return users
     }
-
-
 }
 
 class AllUserListViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
@@ -111,8 +109,6 @@ class AllUserListViewHolder(inflater: LayoutInflater, parent: ViewGroup) :
     init {
         binding = DataBindingUtil.bind(itemView)
     }
-
-
 }
 
 interface OnItemClickCallback {
@@ -120,4 +116,3 @@ interface OnItemClickCallback {
     fun videoCall(position: Int)
     fun searchResult(position: Int)
 }
-

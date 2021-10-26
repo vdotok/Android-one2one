@@ -41,13 +41,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 
-class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
+class AllUserListFragment: CallMangerListenerFragment(), OnItemClickCallback {
 
     lateinit var adapter: AllUserListAdapter
     private lateinit var binding: LayoutAllUserListBinding
     private lateinit var prefs: Prefs
 
-    private var userReceiver: UserModel? = null
+    private var userReceiver: UserModel?= null
     private var isVideoCall: Boolean = false
 
     private var edtSearch = ObservableField<String>()
@@ -99,7 +99,6 @@ class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
         }
 
     }
-
     private fun addPullToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             getAllUsers()
@@ -146,38 +145,38 @@ class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
                         }
                         binding.progressBar.toggleVisibility()
                         binding.swipeRefreshLayout.isRefreshing = false
-
                     }
                 }
             }
         }
     }
 
+
     private fun textListenerForSearch() {
-        binding.searchEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(
-                s: CharSequence,
-                start: Int,
-                count: Int,
-                after: Int
-            ) {
-            }
+            binding.searchEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
-            override fun afterTextChanged(s: Editable) {
-                adapter.filter?.filter(s)
-            }
-        })
-    }
+                override fun afterTextChanged(s: Editable) {
+                   adapter.filter?.filter(s)
+                }
+            })
+        }
 
     private fun openCallFragment(toPeer: String, isVideo: Boolean) {
         userReceiver = userList.find { it.refId == toPeer }
         val bundle = Bundle()
         bundle.putParcelable(UserModel.TAG, userReceiver)
         bundle.putBoolean(IS_VIDEO_CALL, isVideo)
-        bundle.putBoolean("isIncoming", false)
-        Navigation.findNavController(binding.root).navigate(R.id.action_open_audio_fragment, bundle)
+        bundle.putBoolean("isIncoming",false)
+        Navigation.findNavController(binding.root).navigate(R.id.action_open_audio_fragment,bundle)
     }
 
     override fun audioCall(position: Int) {
@@ -188,19 +187,16 @@ class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
         dialCall(position, true)
     }
 
-    private fun dialCall(position: Int, isVideo: Boolean) {
+    private fun dialCall(position: Int, isVideo: Boolean){
 
         val item = adapter.dataList[position]
         item.isSelected = item.isSelected.not()
 
         isVideoCall = isVideo
 
-        (activity as DashBoardActivity).dialOneToOneCall(
-            if (isVideo) MediaType.VIDEO else MediaType.AUDIO,
-            item.refId!!
-        )
+        (activity as DashBoardActivity).dialOneToOneCall(if(isVideo) MediaType.VIDEO else MediaType.AUDIO, item.refId!!)
 
-        if (prefs.loginInfo?.mcToken != null) outGoingCall(item.refId!!)
+        if(prefs.loginInfo?.mcToken != null) outGoingCall(item.refId!!)
 
     }
 
@@ -215,10 +211,10 @@ class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
 
     override fun searchResult(position: Int) {
         edtSearch.get()?.isNotEmpty()?.let {
-            if (position == 0 && it) {
+            if (position == 0 && it){
 //                binding.check.show()
                 binding.rcvUserList.hide()
-            } else {
+            }else{
 //                binding.check.hide()
                 binding.rcvUserList.show()
             }
@@ -235,18 +231,17 @@ class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
         activity?.runOnUiThread {
             userReceiver = userList.find { it.refId == model.from }
             val bundle = Bundle()
-            bundle.putString("userName", userReceiver?.fullName)
+            bundle.putString("userName",userReceiver?.fullName)
             bundle.putParcelable(AcceptCallModel.TAG, model)
-            bundle.putBoolean("isIncoming", true)
-            Navigation.findNavController(binding.root)
-                .navigate(R.id.action_open_audio_fragment, bundle)
+            bundle.putBoolean("isIncoming",true)
+            Navigation.findNavController(binding.root).navigate(R.id.action_open_audio_fragment, bundle)
         }
     }
 
     override fun outGoingCall(toPeer: String) {
         activity?.let {
             it.runOnUiThread {
-                openCallFragment(toPeer, isVideoCall)
+                openCallFragment(toPeer,isVideoCall)
             }
         }
     }
@@ -257,11 +252,10 @@ class AllUserListFragment : CallMangerListenerFragment(), OnItemClickCallback {
             callParams.mcToken = prefs.loginInfo?.mcToken!!
             userReceiver = userList.find { it.refId == callParams.refId }
             val bundle = Bundle()
-            bundle.putString("userName", userReceiver?.fullName)
+            bundle.putString("userName",userReceiver?.fullName)
             bundle.putParcelable(CALL_PARAMS, callParams)
-            bundle.putBoolean("isIncoming", true)
-            Navigation.findNavController(binding.root)
-                .navigate(R.id.action_open_audio_fragment, bundle)
+            bundle.putBoolean("isIncoming",true)
+            Navigation.findNavController(binding.root).navigate(R.id.action_open_audio_fragment, bundle)
         }
     }
 

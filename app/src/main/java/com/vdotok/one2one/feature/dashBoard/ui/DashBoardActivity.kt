@@ -15,7 +15,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.snackbar.Snackbar
-
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.ActivityDashBoardBinding
 import com.vdotok.one2one.extensions.showSnackBar
@@ -30,13 +29,11 @@ import com.vdotok.streaming.commands.CallInfoResponse
 import com.vdotok.streaming.commands.RegisterResponse
 import com.vdotok.streaming.enums.*
 import com.vdotok.streaming.interfaces.CallSDKListener
-import com.vdotok.streaming.interfaces.StreamCallback
 import com.vdotok.streaming.models.*
-import com.vdotok.streaming.stats.StatsInterface
 import org.webrtc.VideoTrack
 
 
-class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, StatsInterface {
+class DashBoardActivity : AppCompatActivity(), CallSDKListener {
 
     private lateinit var binding: ActivityDashBoardBinding
 
@@ -68,7 +65,8 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
 
         myLiveData.observe(this, { isInternetConnected ->
             when {
-                isInternetConnected == true && internetConnectionRestored -> {connectClient()
+                isInternetConnected == true && internetConnectionRestored -> {
+                    connectClient()
                     mListener?.onConnectionSuccess()
                 }
                 isInternetConnected == false -> {
@@ -76,7 +74,8 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                     mListener?.onInternetConnectionLoss()
                     mListener?.onConnectionFail()
                 }
-                else -> {}
+                else -> {
+                }
             }
         })
     }
@@ -88,24 +87,24 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                     != PackageManager.PERMISSION_GRANTED)
         ) {
             ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
-                    ApplicationConstants.MY_PERMISSIONS_REQUEST
+                this, arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
+                ApplicationConstants.MY_PERMISSIONS_REQUEST
             )
         } else if (ContextCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.RECORD_AUDIO
-                ) != PackageManager.PERMISSION_GRANTED
+                this,
+                Manifest.permission.RECORD_AUDIO
+            ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.RECORD_AUDIO),
-                    ApplicationConstants.MY_PERMISSIONS_REQUEST_RECORD_AUDIO
+                this, arrayOf(Manifest.permission.RECORD_AUDIO),
+                ApplicationConstants.MY_PERMISSIONS_REQUEST_RECORD_AUDIO
             )
         } else if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
-                    this, arrayOf(Manifest.permission.CAMERA),
-                    ApplicationConstants.MY_PERMISSIONS_REQUEST_CAMERA
+                this, arrayOf(Manifest.permission.CAMERA),
+                ApplicationConstants.MY_PERMISSIONS_REQUEST_CAMERA
             )
         }
     }
@@ -118,7 +117,7 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
             callClient = it
             callClient.setListener(this)
         }
-        
+
         connectClient()
 
     }
@@ -136,16 +135,16 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
         return "https://${mediaServer.host}:${mediaServer.port}"
     }
 
-    companion object{
+    companion object {
 
         fun createDashBoardActivity(context: Context) = Intent(
-                context,
-                DashBoardActivity::class.java
+            context,
+            DashBoardActivity::class.java
         ).apply {
             addFlags(
-                    Intent.FLAG_ACTIVITY_NEW_TASK or
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK
             )
         }
     }
@@ -164,8 +163,11 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
     }
 
 
-    override fun onSessionReady(mediaProjection: MediaProjection?,
-                                isInternalAudioIncluded: Boolean) {}
+    override fun onSessionReady(
+        mediaProjection: MediaProjection?,
+        isInternalAudioIncluded: Boolean
+    ) {
+    }
 
     override fun participantCount(participantCount: Int) {
 //        TODO("Not yet implemented")
@@ -185,7 +187,7 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                     mListener?.onStartCalling()
                 }
                 CallStatus.OUTGOING_CALL_ENDED,
-                CallStatus.CALL_ENDED_SUCCESS-> {
+                CallStatus.CALL_ENDED_SUCCESS -> {
                     activeSessionId?.let { mListener?.endOngoingCall(it) }
                 }
                 CallStatus.CALL_REJECTED -> {
@@ -203,7 +205,8 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                 CallStatus.SESSION_TIMEOUT -> {
                     mListener?.onCallTimeout()
                 }
-                else -> {}
+                else -> {
+                }
 
             }
         }
@@ -215,8 +218,8 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                 mListener?.onConnectionSuccess()
                 runOnUiThread {
                     callClient.register(
-                            authToken = prefs.loginInfo?.authorizationToken!!,
-                            refId = prefs.loginInfo?.refId!!,0
+                        authToken = prefs.loginInfo?.authorizationToken!!,
+                        refId = prefs.loginInfo?.refId!!,0
                     )
                 }
             }
@@ -235,7 +238,8 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                     Toast.makeText(this, "Connection Error!", Toast.LENGTH_SHORT).show()
                 }
             }
-            else -> {}
+            else -> {
+            }
         }
     }
 
@@ -260,8 +264,12 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
                 )
             } ?: kotlin.run {
                 val snackbar: Snackbar = Snackbar
-                        .make(binding.root, "Client is not connected! Please try reconnecting client", Snackbar.LENGTH_LONG)
-                        .setAction("RECONNECT") { connectClient() }
+                    .make(
+                        binding.root,
+                        "Client is not connected! Please try reconnecting client",
+                        Snackbar.LENGTH_LONG
+                    )
+                    .setAction("RECONNECT") { connectClient() }
                 snackbar.show()
             }
         }
@@ -281,7 +289,7 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
     fun acceptIncomingCall(callParams: CallParams) {
         prefs.loginInfo?.let {
             activeSessionId = callClient.acceptIncomingCall(
-                    it.refId!!, callParams
+                it.refId!!, callParams
             )
         }
     }
@@ -300,7 +308,7 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
     }
 
     override fun incomingCall(callParams: CallParams) {
-        if(activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true){
+        if (activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true) {
             callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
             return
         }
@@ -351,7 +359,10 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
 
     override fun sendCurrentDataUsage(sessionKey: String, usage: Usage) {
         prefs.loginInfo?.refId?.let { refId ->
-            Log.e("statsSdk", "currentSentUsage: ${usage.currentSentBytes}, currentReceivedUsage: ${usage.currentReceivedBytes}")
+            Log.e(
+                "statsSdk",
+                "currentSentUsage: ${usage.currentSentBytes}, currentReceivedUsage: ${usage.currentReceivedBytes}"
+            )
             callClient.sendEndCallLogs(
                 refId = refId,
                 sessionKey = sessionKey,
@@ -375,6 +386,7 @@ class DashBoardActivity: AppCompatActivity(), CallSDKListener, StreamCallback, S
     }
 
     override fun sessionHold(sessionUUID: String) {
+
     }
 
 }

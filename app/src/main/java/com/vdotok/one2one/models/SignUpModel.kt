@@ -26,5 +26,8 @@ data class SignUpModel(
     var deviceOsVer: String? = null,
 
     @SerializedName("app_version")
-    var appVersion: String = "1.0.0"
+    var appVersion: String = "1.0.0",
+
+    @SerializedName("project_id")
+    var project_id: String
 ): Parcelable

@@ -1,7 +1,6 @@
 package com.vdotok.one2one.fragments
 
 import androidx.fragment.app.Fragment
-
 import com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity
 import com.vdotok.one2one.interfaces.FragmentRefreshListener
 import com.vdotok.one2one.models.AcceptCallModel

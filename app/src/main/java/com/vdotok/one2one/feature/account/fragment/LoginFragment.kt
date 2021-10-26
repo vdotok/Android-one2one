@@ -16,10 +16,14 @@ import com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity.Companion.creat
 import com.vdotok.one2one.models.LoginUserModel
 import com.vdotok.one2one.models.UtilsModel
 import com.vdotok.one2one.network.HttpResponseCodes
+import com.vdotok.one2one.network.Result
 import com.vdotok.one2one.network.RetrofitBuilder
 import com.vdotok.one2one.prefs.Prefs
-import com.vdotok.one2one.network.Result
-import com.vdotok.one2one.utils.*
+import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
+import com.vdotok.one2one.utils.disable
+import com.vdotok.one2one.utils.enable
+import com.vdotok.one2one.utils.isInternetAvailable
+import com.vdotok.one2one.utils.safeApiCall
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -97,7 +101,7 @@ class LoginFragment: Fragment() {
             binding.progressBar.toggleVisibility()
             val service = RetrofitBuilder.makeRetrofitService(it)
             CoroutineScope(Dispatchers.IO).launch {
-                val response = safeApiCall { service.loginUser(LoginUserModel(email, password)) }
+                val response = safeApiCall { service.loginUser(LoginUserModel(email, password,SDK_PROJECT_ID)) }
                 withContext(Dispatchers.Main) {
                     binding.signInBtn.enable()
                     try {

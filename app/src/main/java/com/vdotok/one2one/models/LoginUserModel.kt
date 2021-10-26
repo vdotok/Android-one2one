@@ -17,5 +17,8 @@ data class LoginUserModel (
     var email: String? = null,
 
     @SerializedName("password")
-    var password: String? = null
+    var password: String? = null,
+
+    @SerializedName("project_id")
+    var project_id: String
 ) : Parcelable

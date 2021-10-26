@@ -1,6 +1,5 @@
 package com.vdotok.one2one.interfaces
 
-
 import com.vdotok.one2one.models.AcceptCallModel
 import com.vdotok.streaming.models.CallParams
 import org.webrtc.VideoTrack

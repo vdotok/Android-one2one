@@ -14,7 +14,7 @@ import androidx.lifecycle.LiveData
  * Monitors if network is available if any listener is active.
  * Uses Lifecycle components
  *
- * @author : Vdotok
+ * @author : Zohaib Amir
  */
 class NetworkStatusLiveData(application: Application) : LiveData<Boolean?>() {
     private val connectivityManager: ConnectivityManager

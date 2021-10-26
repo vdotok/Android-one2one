@@ -22,6 +22,7 @@ import com.vdotok.one2one.network.HttpResponseCodes
 import com.vdotok.one2one.network.Result
 import com.vdotok.one2one.network.RetrofitBuilder
 import com.vdotok.one2one.prefs.Prefs
+import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
 import com.vdotok.one2one.utils.disable
 import com.vdotok.one2one.utils.enable
 import com.vdotok.one2one.utils.isInternetAvailable
@@ -34,7 +35,7 @@ import retrofit2.HttpException
 
 
 /**
- * Created By: Vdotok
+ * Created By: VdoTok
  * Date & Time: On 5/3/21 At 1:26 PM in 2021
  */
 class SignUpFragment: Fragment() {
@@ -132,7 +133,7 @@ class SignUpFragment: Fragment() {
             val service = RetrofitBuilder.makeRetrofitService(it)
             CoroutineScope(Dispatchers.IO).launch {
                 val response = safeApiCall { service.signUp(SignUpModel(username.get().toString(), email.get().toString(),
-                    password.get().toString()))}
+                    password.get().toString(),project_id = SDK_PROJECT_ID))}
 
                 withContext(Dispatchers.Main) {
                     binding.btnSignUp.enable()

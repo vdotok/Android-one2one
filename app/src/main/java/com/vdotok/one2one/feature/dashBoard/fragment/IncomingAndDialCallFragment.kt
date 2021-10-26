@@ -12,7 +12,6 @@ import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.navigation.Navigation
-
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.LayoutCallRecieverBinding
 import com.vdotok.one2one.extensions.hide
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeUnit
 
 
 /**
- * Created By: Vdotok
+ * Created By: VdoTok
  * Date & Time: On 2/25/21 At 12:14 PM in 2021
  */
 class IncomingAndDialCallFragment : CallMangerListenerFragment(), FragmentRefreshListener {

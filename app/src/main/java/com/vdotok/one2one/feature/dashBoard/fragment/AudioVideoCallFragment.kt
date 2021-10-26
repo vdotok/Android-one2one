@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.navigation.Navigation
+
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.LayoutAudioFragmentBinding
 import com.vdotok.one2one.extensions.hide
