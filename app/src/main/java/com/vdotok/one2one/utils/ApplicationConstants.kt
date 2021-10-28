@@ -11,7 +11,7 @@ object ApplicationConstants {
     const val API_VERSION: String = "v0/"
 
 //    SDK AUTH PARAMS
-    const val SDK_PROJECT_ID: String = "15Q89R"
+    const val SDK_PROJECT_ID: String = "Add your project id here"
 
 
     //    Prefs constants
