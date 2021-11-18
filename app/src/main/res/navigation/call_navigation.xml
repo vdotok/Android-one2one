@@ -3,26 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/call_navigation"
-    app:startDestination="@id/allUsersListFragment">
-    <fragment
-        android:id="@+id/allUsersListFragment"
-        android:name="com.vdotok.one2one.feature.dashBoard.fragment.AllUserListFragment"
-        android:label="allUsersListFragment"
-        tools:layout="@layout/layout_all_user_list">
-
-        <action
-            android:id="@+id/action_open_audio_fragment"
-            app:destination="@id/dialFragment"
-            app:enterAnim="@anim/slide_item_from_right"
-            app:exitAnim="@anim/slide_item_to_left"
-            app:launchSingleTop="true"
-            app:popUpToInclusive="true" />
-
-    </fragment>
+    app:startDestination="@id/dialFragment">
 
     <fragment
         android:id="@+id/dialFragment"
-        android:name="com.vdotok.one2one.feature.dashBoard.fragment.IncomingAndDialCallFragment"
+        android:name="com.vdotok.one2one.feature.call.fragment.DialCallFragment"
         android:label="dialFragment"
         tools:layout="@layout/layout_call_reciever">
 
@@ -39,9 +24,9 @@
 
     <fragment
         android:id="@+id/voiceFragment"
-        android:name="com.vdotok.one2one.feature.dashBoard.fragment.AudioVideoCallFragment"
+        android:name="com.vdotok.one2one.feature.call.fragment.CallFragment"
         android:label="voiceFragment"
-        tools:layout="@layout/layout_audio_fragment">
+        tools:layout="@layout/call_fragment">
 
     </fragment>
 

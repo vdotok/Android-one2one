@@ -8,7 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.UserRowBinding
-import com.vdotok.one2one.models.UserModel
+import com.vdotok.network.models.UserModel
 
 
 

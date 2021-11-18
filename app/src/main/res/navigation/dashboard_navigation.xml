@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/allUsersListFragment">
+    <fragment
+        android:id="@+id/allUsersListFragment"
+        android:name="com.vdotok.one2one.feature.dashBoard.fragment.AllUserListFragment"
+        android:label="allUsersListFragment"
+        tools:layout="@layout/layout_all_user_list">
+    </fragment>
+
+</navigation>

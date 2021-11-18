@@ -21,8 +21,8 @@ data class AcceptCallModel(
 
     var sessionType: SessionType
 
-): Parcelable{
-    companion object{
+): Parcelable {
+    companion object {
         const val TAG = "ACCEPT_CALL_MODEL"
     }
 }

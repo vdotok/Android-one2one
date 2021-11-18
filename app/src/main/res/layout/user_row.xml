@@ -8,7 +8,7 @@
 
         <variable
             name="groupModel"
-            type="com.vdotok.one2one.models.UserModel"/>
+            type="com.vdotok.network.models.UserModel"/>
 
     </data>
 
@@ -27,7 +27,6 @@
             app:layout_constraintStart_toStartOf="parent"
             android:src="@drawable/ic_user_placeholder"
             android:gravity="center"/>
-
 
         <ImageView
             android:id="@+id/imgAudioCall"
@@ -69,9 +68,7 @@
             android:ellipsize="end"
             tools:text="user name"
             android:textSize="16sp"
-            android:textColor="@color/black_green"
-
-            />
+            android:textColor="@color/black_green" />
 
         <View
             android:layout_width="0dp"

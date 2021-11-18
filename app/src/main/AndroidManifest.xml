@@ -9,8 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="false"
@@ -23,19 +22,25 @@
         tools:targetApi="m">
 
         <activity
-            android:name="com.vdotok.one2one.feature.account.ui.AccountActivity"
+            android:name=".feature.account.ui.AccountActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AccountScreen" />
         <activity
-            android:name="com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity"
+            android:name=".feature.dashBoard.activity.DashBoardActivity"
             android:screenOrientation="portrait" />
+
         <activity
-            android:name="com.vdotok.one2one.feature.splash.ui.SplashActivity"
+            android:name=".feature.call.activity.CallActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"
+            android:supportsPictureInPicture="true" />
+
+        <activity
+            android:name=".feature.splash.activity.SplashActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AccountScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

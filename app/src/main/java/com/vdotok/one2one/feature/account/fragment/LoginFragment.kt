@@ -1,34 +1,23 @@
 package com.vdotok.one2one.feature.account.fragment
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.ObservableField
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import com.vdotok.network.network.Result
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.LayoutFragmentLoginBinding
 import com.vdotok.one2one.extensions.*
-import com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity.Companion.createDashBoardActivity
-import com.vdotok.one2one.models.LoginUserModel
-import com.vdotok.one2one.models.UtilsModel
-import com.vdotok.one2one.network.HttpResponseCodes
-import com.vdotok.one2one.network.Result
-import com.vdotok.one2one.network.RetrofitBuilder
+import com.vdotok.one2one.feature.account.viewmodel.AccountViewModel
 import com.vdotok.one2one.prefs.Prefs
-import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
 import com.vdotok.one2one.utils.disable
 import com.vdotok.one2one.utils.enable
+import com.vdotok.one2one.utils.handleLoginResponse
 import com.vdotok.one2one.utils.isInternetAvailable
-import com.vdotok.one2one.utils.safeApiCall
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 
 
 /**
@@ -41,6 +30,8 @@ class LoginFragment: Fragment() {
     private var email : ObservableField<String> = ObservableField<String>()
     private var password : ObservableField<String> = ObservableField<String>()
     private lateinit var prefs: Prefs
+    private val viewModel: AccountViewModel by viewModels()
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,42 +89,43 @@ class LoginFragment: Fragment() {
 
     private fun loginUser(email: String, password: String) {
         activity?.let { it ->
-            binding.progressBar.toggleVisibility()
-            val service = RetrofitBuilder.makeRetrofitService(it)
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = safeApiCall { service.loginUser(LoginUserModel(email, password,SDK_PROJECT_ID)) }
-                withContext(Dispatchers.Main) {
-                    binding.signInBtn.enable()
-                    try {
 
-                        when {
-                            response is Result.Success && response.data.status == HttpResponseCodes.SUCCESS.value -> {
-                                prefs.loginInfo = UtilsModel.updateServerUrls(response.data)
-                                startActivity(createDashBoardActivity(it))
-                            }
-                            response is Result.Error -> {
-                                if (isInternetAvailable(it as Context).not())
-                                    binding.root.showSnackBar(getString(R.string.no_network_available))
-                                else
-                                    binding.root.showSnackBar(response.error.message)
-                            }
-                            else -> binding.root.showSnackBar(response.getDataOrNull()?.message)
-                        }
-
-                    } catch (e: HttpException) {
-                        Log.e(API_ERROR, "loginUser: ${e.printStackTrace()}")
-                    } catch (e: Throwable) {
-                        Log.e(API_ERROR, "loginUser: ${e.printStackTrace()}")
+            viewModel.loginUser(email, password).observe(viewLifecycleOwner) {
+                when (it) {
+                    Result.Loading -> {
+                        binding.progressBar.toggleVisibility()
                     }
-                    binding.progressBar.toggleVisibility()
+                    is Result.Success ->  {
+                        binding.progressBar.toggleVisibility()
+                        handleLoginResponse(requireContext(), it.data, prefs, binding.root)
+                        binding.signInBtn.enable()
+                    }
+                    is Result.Failure -> {
+                        binding.progressBar.toggleVisibility()
+                        if (isInternetAvailable(this@LoginFragment.requireContext()).not())
+                            binding.root.showSnackBar(getString(R.string.no_network_available))
+                        else
+                            binding.root.showSnackBar(it.exception.message)
+
+                        binding.signInBtn.enable()
+                    }
                 }
             }
+
         }
     }
 
-    companion object {
+//    private fun handleLoginResponse(response: LoginResponse) {
+//        when(response.status) {
+//            HttpResponseCodes.SUCCESS.value -> {
+//                saveResponseToPrefs(prefs, response)
+//                startActivity(createDashBoardActivity(requireContext()))
+//            }
+//            else -> {
+//                binding.root.showSnackBar(response.message)
+//            }
+//        }
+//    }
 
-        const val API_ERROR = "API_ERROR"
 
-    }
 }

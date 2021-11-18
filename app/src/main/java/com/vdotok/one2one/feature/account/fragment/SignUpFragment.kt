@@ -1,37 +1,25 @@
 package com.vdotok.one2one.feature.account.fragment
 
-import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.databinding.ObservableField
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
+import com.vdotok.network.models.LoginResponse
+import com.vdotok.network.models.SignUpModel
+import com.vdotok.network.network.*
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.LayoutFragmentSignupBinding
 import com.vdotok.one2one.extensions.*
-import com.vdotok.one2one.feature.dashBoard.ui.DashBoardActivity
-import com.vdotok.one2one.models.CheckUserModel
-import com.vdotok.one2one.models.LoginResponse
-import com.vdotok.one2one.models.SignUpModel
-import com.vdotok.one2one.models.UtilsModel
+import com.vdotok.one2one.feature.account.viewmodel.AccountViewModel
 import com.vdotok.one2one.network.HttpResponseCodes
-import com.vdotok.one2one.network.Result
-import com.vdotok.one2one.network.RetrofitBuilder
 import com.vdotok.one2one.prefs.Prefs
+import com.vdotok.one2one.utils.*
 import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
-import com.vdotok.one2one.utils.disable
-import com.vdotok.one2one.utils.enable
-import com.vdotok.one2one.utils.isInternetAvailable
-import com.vdotok.one2one.utils.safeApiCall
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.HttpException
 
 
 /**
@@ -46,6 +34,7 @@ class SignUpFragment: Fragment() {
     private var password : ObservableField<String> = ObservableField<String>()
 
     private lateinit var prefs: Prefs
+    private val viewModel: AccountViewModel by viewModels()
 
 
     override fun onCreateView(
@@ -87,33 +76,28 @@ class SignUpFragment: Fragment() {
 
     private fun checkUserEmail(email: String) {
         activity?.let {
-            binding.progressBar.toggleVisibility()
-            val service = RetrofitBuilder.makeRetrofitService(it)
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = safeApiCall { service.checkEmail(CheckUserModel(email))}
-                withContext(Dispatchers.Main) {
-                    binding.btnSignUp.enable()
-                    try {
 
-                        when {
-                            response is Result.Success && response.data.status == HttpResponseCodes.SUCCESS.value -> {
-                                handleCheckFullNameResponse(response.data)
-                            }
-                            response is Result.Error -> {
-                                if (isInternetAvailable(it as Context).not())
-                                    binding.root.showSnackBar(getString(R.string.no_network_available))
-                                else
-                                    binding.root.showSnackBar(response.error.message)
-                            }
-                            else -> binding.root.showSnackBar(response.getDataOrNull()?.message)
-                        }
-                    } catch (e: HttpException) {
-                        Log.e(API_ERROR, "signUpUser: ${e.printStackTrace()}")
-                    } catch (e: Throwable) {
-                        Log.e(API_ERROR, "signUpUser: ${e.printStackTrace()}")
+            viewModel.checkEmailAlreadyExist(email).observe(viewLifecycleOwner) {
+
+                when (it) {
+                    is Result.Loading -> {
+                        binding.progressBar.toggleVisibility()
                     }
-                    binding.progressBar.toggleVisibility()
+                    is Result.Success ->  {
+                        binding.progressBar.toggleVisibility()
+                        handleCheckFullNameResponse(it.data)
+                        binding.btnSignUp.enable()
+                    }
+                    is Result.Failure -> {
+                        binding.progressBar.toggleVisibility()
+                        if (isInternetAvailable(this@SignUpFragment.requireContext()).not())
+                            binding.root.showSnackBar(getString(R.string.no_network_available))
+                        else
+                            binding.root.showSnackBar(it.exception.message)
+                        binding.btnSignUp.enable()
+                    }
                 }
+
             }
         }
     }
@@ -128,47 +112,28 @@ class SignUpFragment: Fragment() {
 
     private fun signUp() {
         binding.btnSignUp.disable()
-        activity?.let {
-            binding.progressBar.toggleVisibility()
-            val service = RetrofitBuilder.makeRetrofitService(it)
-            CoroutineScope(Dispatchers.IO).launch {
-                val response = safeApiCall { service.signUp(SignUpModel(username.get().toString(), email.get().toString(),
-                    password.get().toString(),project_id = SDK_PROJECT_ID))}
 
-                withContext(Dispatchers.Main) {
-                    binding.btnSignUp.enable()
-                    try {
-                        when {
-                            response is Result.Success && response.data.status == HttpResponseCodes.SUCCESS.value -> {
-                                handleSignUpResponse(response.data)
-                            }
-                            response is Result.Error -> {
-                                if (isInternetAvailable(it as Context).not())
-                                    binding.root.showSnackBar(getString(R.string.no_network_available))
-                                else
-                                    binding.root.showSnackBar(response.error.message)
-                            }
-                            else -> binding.root.showSnackBar(response.getDataOrNull()?.message)
-                        }
-                    } catch (e: HttpException) {
-                        Log.e(API_ERROR, "signUpUser: ${e.printStackTrace()}")
-                    } catch (e: Throwable) {
-                        Log.e(API_ERROR, "signUpUser: ${e.printStackTrace()}")
-                    }
+        viewModel.signUp(SignUpModel(username.get().toString(), email.get().toString(),
+            password.get().toString(),project_id = SDK_PROJECT_ID)).observe(viewLifecycleOwner) {
+
+            when (it) {
+                Result.Loading -> {
                     binding.progressBar.toggleVisibility()
                 }
-            }
-        }
-    }
+                is Result.Success ->  {
+                    binding.progressBar.toggleVisibility()
+                    handleLoginResponse(requireContext(), it.data, prefs, binding.root)
+                    binding.btnSignUp.enable()
+                }
+                is Result.Failure -> {
+                    binding.progressBar.toggleVisibility()
+                    if (isInternetAvailable(this@SignUpFragment.requireContext()).not())
+                        binding.root.showSnackBar(getString(R.string.no_network_available))
+                    else
+                        binding.root.showSnackBar(it.exception.message)
 
-    private fun handleSignUpResponse(loginResponse: LoginResponse) {
-        when(loginResponse.status) {
-            HttpResponseCodes.SUCCESS.value -> {
-                prefs.loginInfo = UtilsModel.updateServerUrls(loginResponse)
-                activity?.let { startActivity(DashBoardActivity.createDashBoardActivity(it)) }
-            }
-            else -> {
-                binding.root.showSnackBar(loginResponse.message)
+                    binding.btnSignUp.enable()
+                }
             }
         }
     }

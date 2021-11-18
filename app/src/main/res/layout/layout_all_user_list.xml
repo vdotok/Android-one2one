@@ -22,7 +22,7 @@
 
         <include
             android:id="@+id/custom_toolbar"
-            layout="@layout/custom_toolbar"/>
+            layout="@layout/custom_toolbar" />
 
         <EditText
             android:id="@+id/search_edit_text"
@@ -34,7 +34,9 @@
             android:textAlignment="viewStart"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/custom_toolbar" />
+            app:layout_constraintTop_toBottomOf="@+id/custom_toolbar"
+            tools:ignore="TextFields"
+            android:importantForAutofill="no" />
 
         <TextView
             android:id="@+id/tv_selectContact"
@@ -51,8 +53,7 @@
             android:textColor="@color/indigo"
             app:layout_constraintEnd_toEndOf="@id/search_edit_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/search_edit_text"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/search_edit_text" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"
@@ -62,9 +63,6 @@
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:itemCount="5"
-            tools:listitem="@layout/user_row"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/frame"
@@ -101,7 +99,7 @@
                 style="@style/Theme_Button_DeActivated"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
+                android:layout_marginEnd="20dp"
                 android:gravity="center"
                 tools:text="Log out - chilli"
                 android:stateListAnimator="@null"
@@ -111,7 +109,7 @@
                 android:id="@+id/tv_led"
                 android:layout_width="10dp"
                 android:layout_height="10dp"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="4dp"
                 android:layout_gravity="end|top"
                 android:src="@drawable/led_error" />
         </FrameLayout>

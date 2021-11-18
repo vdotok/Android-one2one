@@ -11,6 +11,7 @@
     <string name="user_initial">KM</string>
     <string name="typeMessage">Type your message</string>
     <string name="status">Status</string>
+    <string name="VdoTok">VdoTok</string>
     <string name="confirm">Confirm</string>
     <string name="invalid_email">Invalid Email Address</string>
     <string name="invalid_username">Invalid Username Credential</string>

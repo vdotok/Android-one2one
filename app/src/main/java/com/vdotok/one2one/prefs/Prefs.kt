@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.google.gson.Gson
-import com.vdotok.one2one.models.LoginResponse
-import com.vdotok.one2one.models.UserModel
+import com.vdotok.network.models.LoginResponse
+import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.utils.ApplicationConstants
 
 /**

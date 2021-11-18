@@ -1,4 +1,5 @@
 package com.vdotok.one2one.extensions
+
 import android.app.Activity
 import android.text.Editable
 import android.text.TextUtils
@@ -69,7 +70,7 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
 @BindingAdapter(value = ["email", "showErrorMsg"])
 fun View.checkedEmail(email: String, showErrorMsg: Boolean = false): Boolean {
     return if (TextUtils.isEmpty(email) || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-        if(showErrorMsg) this.showSnackBar(this.context.getString(R.string.invalid_email))
+        if (showErrorMsg) this.showSnackBar(this.context.getString(R.string.invalid_email))
         false
     } else {
         true
@@ -78,8 +79,11 @@ fun View.checkedEmail(email: String, showErrorMsg: Boolean = false): Boolean {
 
 @BindingAdapter(value = ["username", "showErrorMsg"])
 fun View.checkedUserName(username: String, showErrorMsg: Boolean = false): Boolean {
-    return if (username.containsNonAlphaNumericName()|| username.length < 4 || username.length > 20 || username.isEmpty() || TextUtils.isDigitsOnly(username)) {
-        if(showErrorMsg) this.showSnackBar(this.context.getString(R.string.invalid_username))
+    return if (username.containsNonAlphaNumericName() || username.length < 4 || username.length > 20 || username.isEmpty() || TextUtils.isDigitsOnly(
+            username
+        )
+    ) {
+        if (showErrorMsg) this.showSnackBar(this.context.getString(R.string.invalid_username))
         false
     } else {
         true

@@ -7,11 +7,8 @@ package com.vdotok.one2one.utils
  */
 object ApplicationConstants {
 
-    const val API_BASE_URL: String = "https://tenant-api.vdotok.dev/"
-    const val API_VERSION: String = "v0/"
-
-//    SDK AUTH PARAMS
-    const val SDK_PROJECT_ID: String = "Add your project id here"
+    //    SDK AUTH PARAMS
+    const val SDK_PROJECT_ID: String = "Please add your project id here"
 
 
     //    Prefs constants
@@ -23,7 +20,7 @@ object ApplicationConstants {
     const val API_ERROR = "API_ERROR"
 
     // This error code means a local error occurred while parsing the received json.
-    const val HTTP_CODE_NO_NETWROK = 600
+    const val HTTP_CODE_NO_NETWORK = 600
 
     const val MY_PERMISSIONS_REQUEST_CAMERA = 100
     const val MY_PERMISSIONS_REQUEST_RECORD_AUDIO = 101
