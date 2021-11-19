@@ -38,7 +38,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 <img width="468" alt="Screenshot 2021-10-06 at 2 15 14 PM" src="https://user-images.githubusercontent.com/86282129/136174906-b6f0ba56-bb67-4680-8641-43fbc02de479.png">
 
 <b>Project Signup and Project ID:</b>
-* Register for “Call Server” at [VdoTok](https://userpanel.vdotok.com/signup) and get the <b>Project ID</b>
+* Register for “Call Server” at [VdoTok](https://console.vdotok.com) and get the <b>Project ID</b>
 * From file explorer, double-click on <b>vdotok-call -> app -> src -> main -> java -> com -> vdotok -> one2one -> utils -> ApplicationConstants</b> replace <b>SDK_PROJECT_ID</b> with your own <b>Project Id</b>
 
 <b>Device Setting:</b>
