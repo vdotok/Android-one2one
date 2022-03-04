@@ -40,7 +40,7 @@ Bravo! You’ve successfully configured the project in Android Studio.
 * Go to <b>VdoTok-Call -> App -> libs</b>
 * Add the downloaded <b>streamingSDK.aar</b> file in the libs folder
 <img width="468" alt="Screenshot 2021-10-06 at 2 15 14 PM" src="https://user-images.githubusercontent.com/86282129/136174906-b6f0ba56-bb67-4680-8641-43fbc02de479.png">
-<li> After this click on gradle sync icon from the toolbar
+<li> After this, click on gradle sync icon from the toolbar
 <img width="21" alt="Screenshot 2021-12-02 at 4 43 51 PM" src="https://user-images.githubusercontent.com/88875529/144415902-78883f01-f5be-4f99-a6e3-d9ea44a71936.png"> to sync project.</li></br>
 
 <b>Project Signup and Project ID:</b>
