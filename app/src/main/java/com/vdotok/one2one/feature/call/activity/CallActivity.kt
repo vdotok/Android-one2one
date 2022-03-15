@@ -2,6 +2,7 @@ package com.vdotok.one2one.feature.call.activity
 
 import android.content.Context
 import android.content.Intent
+import android.media.projection.MediaProjection
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
@@ -53,8 +54,6 @@ class CallActivity : BaseActivity() {
 
     override fun incomingCall(callParams: CallParams) {
     }
-
-
 
     companion object {
 

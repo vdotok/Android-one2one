@@ -104,15 +104,6 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     }
 
 
-    override fun onSessionReady(
-        mediaProjection: MediaProjection?,
-        isInternalAudioIncluded: Boolean
-    ) {
-    }
-
-    override fun participantCount(participantCount: Int) {
-    }
-
     override fun audioVideoState(state: SessionStateInfo) {
         runOnUiThread {
             mListener?.onAudioVideoStateChanged(state.audioState!!, state.videoState!!)
@@ -126,8 +117,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 CallStatus.CALL_CONNECTED -> {
                     mListener?.onStartCalling()
                 }
-                CallStatus.OUTGOING_CALL_ENDED,
-                CallStatus.CALL_ENDED_SUCCESS -> {
+                CallStatus.OUTGOING_CALL_ENDED -> {
                     turnSpeakerOff()
                     activeSessionId?.let { mListener?.endOngoingCall(it) }
                 }
@@ -151,6 +141,14 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
 
             }
         }
+    }
+
+    override fun onSessionReady(mediaProjection: MediaProjection?) {
+
+    }
+
+    override fun participantCount(participantCount: Int, participantRefIdList: ArrayList<String>) {
+
     }
 
     override fun connectionStatus(enumConnectionStatus: EnumConnectionStatus) {
