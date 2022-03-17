@@ -258,7 +258,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
                 remoteViewReference.getPreview().setMirror(false)
                 binding.remoteView.postDelayed({
                     isSpeakerOff = false
-                    callClient.toggleSpeakerOnOff()
+                    callClient.setSpeakerEnable(true)
                 }, 1000)
                 binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
 

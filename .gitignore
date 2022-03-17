@@ -147,3 +147,24 @@ Thumbs.db
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
+
+
+# Generated files
+.bin
+.lock
+
+# Gradle files
+.gradle/*
+/captures
+/build
+
+
+# Local configuration file (sdk path, etc)
+/local.properties
+.local.properties
+
+.idea/deploymentTargetDropDown.xml
+
+.idea/caches/gradle_models.ser
+.idea/caches/build_file_checksums.ser
+.idea/codeStyles/Project.xml
