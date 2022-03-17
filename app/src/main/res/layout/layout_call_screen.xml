@@ -166,63 +166,6 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/optionsLay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="30dp"
-                    android:layout_marginBottom="100dp"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-
-                    <ImageView
-                        android:id="@+id/ivVideoCall"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="20dp"
-                        android:background="@drawable/ic_video_call" />
-
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginBottom="20dp"
-                        android:visibility="visible"
-                        app:cardCornerRadius="20dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
-
-                        <ImageView
-                            android:id="@+id/ivMic"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/ic_unmute_mic" />
-
-                    </androidx.cardview.widget.CardView>
-
-
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:visibility="visible"
-                        app:cardCornerRadius="20dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent">
-
-                        <ImageView
-                            android:id="@+id/speakerBtn"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/speaker" />
-
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
-
-
-                <LinearLayout
                     android:id="@+id/bottomBar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
