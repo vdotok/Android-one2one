@@ -8,19 +8,19 @@ import retrofit2.http.POST
 
 interface ApiService {
 
-    @POST("API/v0/Login")
+    @POST("/API/v0/Login")
     suspend fun loginUser(@Body model: LoginUserModel): LoginResponse
 
-    @POST("API/v0/SignUp")
+    @POST("/API/v0/SignUp")
     suspend fun signUp(@Body model: SignUpModel): LoginResponse
 
 //    @POST("API/v0/CheckUsername")
 //    suspend fun checkUserName(@Body model: CheckUserModel): Response<LoginResponse>
 
-    @POST("API/v0/CheckEmail")
+    @POST("/API/v0/CheckEmail")
     suspend fun checkEmail(@Body model: EmailModel): LoginResponse
 
-    @POST("API/v0/AllUsers")
+    @POST("/API/v0/AllUsers")
     suspend fun getAllUsers(@Header("Authorization") auth_token: String): GetAllUsersResponseModel
 
 }
