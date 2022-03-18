@@ -181,7 +181,11 @@ class CallFragment : BaseFragment(), FragmentCallback {
             else -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
         }
 
-        callClient.toggleSpeakerOnOff()
+        if (callClient.isSpeakerEnabled()) {
+           callClient.setSpeakerEnable(false)
+        } else {
+            callClient.setSpeakerEnable(true)
+        }
     }
 
     private fun muteButtonAction() {

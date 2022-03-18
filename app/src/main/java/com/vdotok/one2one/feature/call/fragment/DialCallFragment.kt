@@ -116,7 +116,7 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
         startCountDownForIncomingCall()
 
         playTone()
-        userName.set(userModel?.userName)
+        userName.set(userModel?.fullName)
         when (callParams?.mediaType) {
             MediaType.AUDIO -> {
                 incomingCallTitle.set(getString(R.string.incoming_call))
