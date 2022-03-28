@@ -53,6 +53,11 @@ class CallActivity : BaseActivity() {
     }
 
     override fun incomingCall(callParams: CallParams) {
+        if (activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true) {
+            callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
+            return
+        }
+        mListener?.onAcceptIncomingCall(callParams)
     }
 
     companion object {
