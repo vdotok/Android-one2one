@@ -234,6 +234,11 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
        closeFragmentWithMessage("Call missed")
     }
 
+    override fun onInsufficientBalance() {
+            closeFragmentWithMessage("Insufficient Balance!")
+    }
+
+
     override fun endOngoingCall(sessionId: String) {
         closeFragmentWithMessage("Call ended")
     }

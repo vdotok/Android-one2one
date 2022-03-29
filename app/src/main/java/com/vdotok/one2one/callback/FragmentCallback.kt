@@ -24,4 +24,5 @@ interface FragmentCallback {
     fun onCallNoAnswer()
     fun onCallBusy()
     fun onCallTimeout() {}
+    fun onInsufficientBalance(){}
 }

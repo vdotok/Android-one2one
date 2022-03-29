@@ -136,6 +136,9 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 CallStatus.SESSION_TIMEOUT -> {
                     mListener?.onCallTimeout()
                 }
+                CallStatus.INSUFFICIENT_BALANCE ->{
+                    mListener?.onInsufficientBalance()
+                }
                 else -> {
                 }
 
