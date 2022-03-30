@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.vdotok.network.models.UserModel
@@ -36,6 +37,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private var callParams: CallParams? = null
     private var isIncomingCall = false
+    private var isFragmentOpen = true
     private lateinit var binding: CallFragmentBinding
 
     private lateinit var prefs: Prefs
@@ -300,6 +302,9 @@ class CallFragment : BaseFragment(), FragmentCallback {
         }
     }
 
+    override fun onInsufficientBalance() {
+        closeFragmentWithMessage("Insufficient Balance!")
+    }
 
     override fun onInternetConnectionLoss() {
         activity?.runOnUiThread { endCall() }
@@ -308,4 +313,13 @@ class CallFragment : BaseFragment(), FragmentCallback {
     override fun onAcceptIncomingCall(callParams: CallParams) {
     }
 
+    private fun closeFragmentWithMessage(message: String){
+        if(isFragmentOpen) {
+            activity?.runOnUiThread {
+                Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                activity?.onBackPressed()
+            }
+            isFragmentOpen = false
+        }
+    }
 }
