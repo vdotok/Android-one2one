@@ -151,10 +151,6 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
 
     }
 
-    override fun participantCount(participantCount: Int, participantRefIdList: ArrayList<String>) {
-
-    }
-
     override fun connectionStatus(enumConnectionStatus: EnumConnectionStatus) {
         when (enumConnectionStatus) {
             EnumConnectionStatus.CONNECTED -> {

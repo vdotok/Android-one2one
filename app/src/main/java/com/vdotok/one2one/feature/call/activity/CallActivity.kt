@@ -60,6 +60,10 @@ class CallActivity : BaseActivity() {
         mListener?.onAcceptIncomingCall(callParams)
     }
 
+    override fun multiSessionCreated(sessionIds: Pair<String, String>) {
+
+    }
+
     companion object {
 
         const val VIDEO_CALL = "video_call"

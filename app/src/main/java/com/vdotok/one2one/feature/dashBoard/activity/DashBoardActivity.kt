@@ -110,6 +110,10 @@ class DashBoardActivity : BaseActivity() {
         internetConnectionRestored = false
     }
 
+    override fun multiSessionCreated(sessionIds: Pair<String, String>) {
+
+    }
+
     override fun onDestroy() {
         callClient.disConnectSocket()
         super.onDestroy()
