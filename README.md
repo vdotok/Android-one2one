@@ -17,7 +17,7 @@ IDE Installation & Build Guide
 * Select <b>Git</b> from <b>Version control</b> dropdown menu
 * Paste this URL https://github.com/vdotok/Android-one2one.git in URL section
 * Click on <b>Clone</b> button and wait for build.gradle file. You can see the progress at the bottom of <b>Android Studio</b>
-* Go to file menu <b>Tools -> SDK Manager</b>
+* Go to file menu/app menu <b>Tools -> SDK Manager</b>
 * Click all checkboxes from <b>API Level 21 and onward</b>
 * Click <b>Apply</b> and download relevant packages
 * Let the <b>Android Studio</b> install the components
