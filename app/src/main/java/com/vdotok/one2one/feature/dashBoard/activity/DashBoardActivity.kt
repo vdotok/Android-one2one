@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.snackbar.Snackbar
 import com.vdotok.one2one.R
+import com.vdotok.one2one.VdoTok
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.databinding.ActivityDashBoardBinding
 import com.vdotok.one2one.utils.ApplicationConstants
@@ -79,7 +80,7 @@ class DashBoardActivity : BaseActivity() {
 
     //    while dialing one2one call we need to save the sessionID based on the receiver's refID
     fun dialOneToOneCall(mediaType: MediaType, refIdUser: String) {
-
+        (application as VdoTok).mediaTypeCheck = mediaType
         prefs.loginInfo?.let {
             it.mcToken?.let { mcToken ->
                 activeSessionId = callClient.dialOne2OneCall(
@@ -135,6 +136,7 @@ class DashBoardActivity : BaseActivity() {
     }
 
     override fun incomingCall(callParams: CallParams) {
+        (application as VdoTok).mediaTypeCheck = callParams.mediaType
         if (activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true) {
             callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
             return
