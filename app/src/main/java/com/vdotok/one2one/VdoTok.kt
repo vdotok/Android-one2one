@@ -19,12 +19,19 @@ class VdoTok : Application() {
     private lateinit var callClient: CallClient
     private lateinit var prefs :Prefs
     var mediaTypeCheck: MediaType? = null
+    var camView: Boolean = true
     private var lifecycleEventObserver = LifecycleEventObserver { _, event ->
        when (event) {
           Lifecycle.Event.ON_RESUME -> {
               if (mediaTypeCheck == MediaType.VIDEO) {
-                  callClient.recentSession()?.let {
-                      callClient.resumeVideo(prefs.loginInfo?.refId.toString(), it)
+                  if (camView) {
+                      callClient.recentSession()?.let {
+                          callClient.resumeVideo(prefs.loginInfo?.refId.toString(), it)
+                      }
+                  }else{
+                      callClient.recentSession()?.let {
+                          callClient.pauseVideo(prefs.loginInfo?.refId.toString(), it)
+                      }
                   }
               }
             }

@@ -14,6 +14,7 @@ import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.R
+import com.vdotok.one2one.VdoTok
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.base.BaseFragment
 import com.vdotok.one2one.callback.FragmentCallback
@@ -157,6 +158,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
                 )
                 binding.ivCameraOnOff.setImageResource(R.drawable.ic_call_video_rounded)
                 ownViewReference.showHideAvatar(false)
+                (activity?.application as VdoTok).camView = true
 
             } else {
                 //pause video
@@ -166,6 +168,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
                     refId = prefs.loginInfo?.refId!!
                 )
                 binding.ivCameraOnOff.setImageResource(R.drawable.ic_video_off)
+                (activity?.application as VdoTok).camView = false
             }
         }
     }
