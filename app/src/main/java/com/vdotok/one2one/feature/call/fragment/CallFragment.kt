@@ -50,7 +50,6 @@ class CallFragment : BaseFragment(), FragmentCallback {
     private var isVideoCall = ObservableBoolean(false)
 
     private var isMuted = false
-    private var isSpeakerOff = true
     private var isVideoResume = true
 
     private var callDuration = 0
@@ -180,16 +179,12 @@ class CallFragment : BaseFragment(), FragmentCallback {
     }
 
     private fun speakerButtonAction() {
-        isSpeakerOff = isSpeakerOff.not()
-        when {
-            isSpeakerOff -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
-            else -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
-        }
-
         if (callClient.isSpeakerEnabled()) {
-           callClient.setSpeakerEnable(false)
+            callClient.setSpeakerEnable(false)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
         } else {
             callClient.setSpeakerEnable(true)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
         }
     }
 
@@ -218,12 +213,16 @@ class CallFragment : BaseFragment(), FragmentCallback {
         userName.set(userModel?.userName)
 
         if (!videoCall) {
+            callClient.setSpeakerEnable(false)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
             binding.tvCallType.text = getString(R.string.audio_calling)
             binding.ivCameraOnOff.setImageResource(R.drawable.ic_video_off)
             binding.remoteView.invisible()
             binding.localView.hide()
             binding.ivCamSwitch.hide()
         } else {
+            callClient.setSpeakerEnable(true)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
             binding.tvCallType.text = getString(R.string.video_calling)
             binding.imgUserPhoto.hide()
         }
@@ -265,11 +264,6 @@ class CallFragment : BaseFragment(), FragmentCallback {
             try {
                 stream.addSink(binding.remoteView.setView())
                 remoteViewReference.getPreview().setMirror(false)
-                binding.remoteView.postDelayed({
-                    isSpeakerOff = false
-                    callClient.setSpeakerEnable(true)
-                }, 1000)
-                binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
 
             } catch (e: Exception) {
                 Log.i("SocketLog", "onStreamAvailable: exception" + e.printStackTrace())
@@ -316,8 +310,8 @@ class CallFragment : BaseFragment(), FragmentCallback {
     override fun onAcceptIncomingCall(callParams: CallParams) {
     }
 
-    private fun closeFragmentWithMessage(message: String){
-        if(isFragmentOpen) {
+    private fun closeFragmentWithMessage(message: String) {
+        if (isFragmentOpen) {
             activity?.runOnUiThread {
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
                 activity?.onBackPressed()

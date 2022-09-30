@@ -215,9 +215,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                     Log.e("register", "message: ${registerResponse.responseMessage}")
 
                     getRootView().showSnackBar("Socket Connected!")
-                    if (registerResponse.reConnectStatus == 1) {
-                        callClient.initiateReInviteProcess()
-                    }
+                    callClient.initiateReInviteProcess()
                 }
             }
             RegistrationStatus.UN_REGISTER,
