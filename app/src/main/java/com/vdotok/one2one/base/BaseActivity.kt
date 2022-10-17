@@ -193,6 +193,11 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
         }
     }
 
+    override fun onDestroy() {
+        mLiveDataNetwork.removeObservers(this)
+        super.onDestroy()
+    }
+
     override fun incomingCall(callParams: CallParams) {
     }
 
