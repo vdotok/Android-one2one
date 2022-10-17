@@ -1,5 +1,6 @@
 package com.vdotok.one2one.feature.splash.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,6 +11,7 @@ import com.vdotok.one2one.databinding.ActivitySplashBinding
 import com.vdotok.one2one.feature.account.ui.AccountActivity.Companion.createAccountsActivity
 import com.vdotok.one2one.feature.dashBoard.activity.DashBoardActivity.Companion.createDashBoardActivity
 import com.vdotok.one2one.prefs.Prefs
+import com.vdotok.one2one.service.OnClearFromRecentService
 
 class SplashActivity : AppCompatActivity() {
 
@@ -18,6 +20,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startService(Intent(this, OnClearFromRecentService::class.java))
         init()
     }
 

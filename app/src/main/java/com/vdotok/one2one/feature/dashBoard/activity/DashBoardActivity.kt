@@ -115,11 +115,6 @@ class DashBoardActivity : BaseActivity() {
 
     }
 
-    override fun onDestroy() {
-        callClient.disConnectSocket()
-        super.onDestroy()
-    }
-
     override fun onStart() {
         super.onStart()
         internetConnectionRestored = true

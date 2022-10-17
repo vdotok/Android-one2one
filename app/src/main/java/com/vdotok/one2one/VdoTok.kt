@@ -16,7 +16,7 @@ import com.vdotok.streaming.enums.MediaType
  */
 class VdoTok : Application() {
 
-    private lateinit var callClient: CallClient
+    lateinit var callClient: CallClient
     private lateinit var prefs :Prefs
     var mediaTypeCheck: MediaType? = null
     var camView: Boolean = true

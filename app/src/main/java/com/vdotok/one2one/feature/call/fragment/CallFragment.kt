@@ -10,9 +10,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.vdotok.network.models.UserModel
+import com.vdotok.one2one.CustomCallView
 import com.vdotok.one2one.R
 import com.vdotok.one2one.VdoTok
 import com.vdotok.one2one.base.BaseActivity
@@ -28,7 +30,6 @@ import com.vdotok.one2one.utils.TimeUtils.getTimeFromSeconds
 import com.vdotok.one2one.utils.performSingleClick
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.models.CallParams
-import com.vdotok.streaming.views.CallViewRenderer
 import org.webrtc.VideoTrack
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -56,8 +57,8 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
-    private lateinit var ownViewReference: CallViewRenderer
-    private lateinit var remoteViewReference: CallViewRenderer
+    private lateinit var ownViewReference: CustomCallView
+    private lateinit var remoteViewReference: CustomCallView
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -251,11 +252,6 @@ class CallFragment : BaseFragment(), FragmentCallback {
         binding.tvTime.text = getTimeFromSeconds(callDuration)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        stopTimer()
-        (activity as CallActivity).endCall()
-    }
 
     override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {
         val mainHandler = activity?.mainLooper?.let { Handler(it) }
@@ -263,8 +259,6 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
             try {
                 stream.addSink(binding.remoteView.setView())
-                remoteViewReference.getPreview().setMirror(false)
-
             } catch (e: Exception) {
                 Log.i("SocketLog", "onStreamAvailable: exception" + e.printStackTrace())
             }
@@ -278,7 +272,6 @@ class CallFragment : BaseFragment(), FragmentCallback {
         val mainHandler = activity?.let { Handler(it.mainLooper) }
         val myRunnable = Runnable {
             stream.addSink(binding.localView.setView())
-            ownViewReference.getPreview().setMirror(false)
         }
         mainHandler?.post(myRunnable)
     }

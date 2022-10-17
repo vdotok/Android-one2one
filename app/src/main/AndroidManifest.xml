@@ -22,6 +22,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
 
+        <service android:name=".service.OnClearFromRecentService" />
         <activity
             android:name=".feature.account.ui.AccountActivity"
             android:screenOrientation="portrait"

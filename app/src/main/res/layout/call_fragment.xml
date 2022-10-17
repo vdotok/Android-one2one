@@ -23,7 +23,7 @@
         android:background="@color/light_grey1">
 
 
-        <com.vdotok.streaming.views.CallViewRenderer
+        <com.vdotok.one2one.CustomCallView
             android:id="@+id/remoteView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -109,7 +109,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
 
-        <com.vdotok.streaming.views.CallViewRenderer
+        <com.vdotok.one2one.CustomCallView
                 android:id="@+id/localView"
                 android:layout_width="130dp"
                 android:layout_height="170dp"

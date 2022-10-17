@@ -5,12 +5,15 @@ import android.content.Intent
 import android.media.projection.MediaProjection
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.vdotok.one2one.R
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.databinding.ActivityCallBinding
 import com.vdotok.one2one.models.AcceptCallModel
 import com.vdotok.network.models.UserModel
+import com.vdotok.one2one.feature.dashBoard.activity.DashBoardActivity
 import com.vdotok.one2one.utils.ApplicationConstants
 import com.vdotok.streaming.models.CallParams
 
@@ -19,6 +22,7 @@ class CallActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCallBinding
     override fun getRootView() = binding.root
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,11 +31,24 @@ class CallActivity : BaseActivity() {
 
         activeSessionId = intent.extras?.getString(Active_Session_ID)
 
-        findNavController(R.id.nav_host_fragment)
-            .setGraph(
-                R.navigation.call_navigation,
-                intent.extras
-            )
+        val nav = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = nav.navController
+        nav.navController.apply {
+            Bundle().apply {
+                setGraph(R.navigation.call_navigation, intent.extras)
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        when (navController.currentDestination!!.id) {
+            R.id.dialFragment-> {
+                super.onBackPressed()
+            }
+            R.id.voiceFragment -> {
+            }
+        }
+
     }
 
     fun acceptIncomingCall(callParams: CallParams) {
