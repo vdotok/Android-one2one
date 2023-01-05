@@ -245,9 +245,6 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
 //        mListener?.onRemoteStreamReceived()
     }
 
-    override fun memoryUsageDetails(memoryUsage: Long) {
-    }
-
     override fun sendCurrentDataUsage(sessionKey: String, usage: Usage) {
         prefs.loginInfo?.refId?.let { refId ->
             Log.e(

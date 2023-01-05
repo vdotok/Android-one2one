@@ -115,6 +115,10 @@ class DashBoardActivity : BaseActivity() {
 
     }
 
+    override fun sessionReconnecting(sessionID: String) {
+//        TODO("Not yet implemented")
+    }
+
     override fun onDestroy() {
         callClient.disConnectSocket()
         super.onDestroy()

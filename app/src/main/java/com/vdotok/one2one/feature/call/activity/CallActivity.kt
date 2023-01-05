@@ -64,6 +64,10 @@ class CallActivity : BaseActivity() {
 
     }
 
+    override fun sessionReconnecting(sessionID: String) {
+//        TODO("Not yet implemented")
+    }
+
     companion object {
 
         const val VIDEO_CALL = "video_call"
