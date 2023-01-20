@@ -22,6 +22,7 @@ interface FragmentCallback {
     fun onConnectionSuccess() {}
     fun onConnectionFail() {}
     fun onCallNoAnswer()
+    fun onUserNotAvailable(){}
     fun onCallBusy()
     fun onCallTimeout() {}
     fun onInsufficientBalance(){}

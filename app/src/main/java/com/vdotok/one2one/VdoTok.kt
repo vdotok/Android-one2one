@@ -1,14 +1,11 @@
 package com.vdotok.one2one
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.lifecycle.*
 import com.vdotok.one2one.prefs.Prefs
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.enums.MediaType
-
+import org.webrtc.EglBase
 
 /**
  * Created By: VdoTok
@@ -16,43 +13,48 @@ import com.vdotok.streaming.enums.MediaType
  */
 class VdoTok : Application() {
 
-    private lateinit var callClient: CallClient
+    lateinit var callClient: CallClient
     private lateinit var prefs :Prefs
     var mediaTypeCheck: MediaType? = null
     var camView: Boolean = true
+    private val rootEglBase: EglBase = EglBase.create()
+    val rootEglBaseContext: EglBase.Context = rootEglBase.eglBaseContext
     private var lifecycleEventObserver = LifecycleEventObserver { _, event ->
-       when (event) {
-          Lifecycle.Event.ON_RESUME -> {
-              if (mediaTypeCheck == MediaType.VIDEO) {
-                  if (camView) {
-                      callClient.recentSession()?.let {
-                          callClient.resumeVideo(prefs.loginInfo?.refId.toString(), it)
-                      }
-                  }else{
-                      callClient.recentSession()?.let {
-                          callClient.pauseVideo(prefs.loginInfo?.refId.toString(), it)
-                      }
-                  }
-              }
+        when (event) {
+            Lifecycle.Event.ON_RESUME -> {
+                if (mediaTypeCheck == MediaType.VIDEO) {
+                    if (camView) {
+                        callClient.recentSession()?.let {
+                            callClient.resumeVideo(prefs.loginInfo?.refId.toString(), it)
+                        }
+                    }else{
+                        callClient.recentSession()?.let {
+                            callClient.pauseVideo(prefs.loginInfo?.refId.toString(), it)
+                        }
+                    }
+                }
             }
-           Lifecycle.Event.ON_PAUSE -> {
-               if (mediaTypeCheck == MediaType.VIDEO) {
-                   callClient.recentSession()?.let {
-                       callClient.pauseVideo(prefs.loginInfo?.refId.toString(), it)
-                   }
-               }
-              }
+            Lifecycle.Event.ON_PAUSE -> {
+                if (mediaTypeCheck == MediaType.VIDEO) {
+                    callClient.recentSession()?.let {
+                        callClient.pauseVideo(prefs.loginInfo?.refId.toString(), it)
+                    }
+                }
+            }
+            Lifecycle.Event.ON_DESTROY -> {
+                rootEglBase.release()
+            }
             else -> {}
-         }
-     }
+        }
+    }
 
-   override fun onCreate() {
-       super.onCreate()
-       vdotok = this
-       callClient = CallClient.getInstance(this)!!
-       prefs = Prefs(this)
-       ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
-   }
+    override fun onCreate() {
+        super.onCreate()
+        vdotok = this
+        callClient = CallClient.getInstance(this)!!
+        prefs = Prefs(this)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
+    }
 
     companion object {
         private var vdotok: VdoTok? = null

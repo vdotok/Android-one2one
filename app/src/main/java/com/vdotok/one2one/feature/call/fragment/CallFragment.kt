@@ -2,6 +2,7 @@ package com.vdotok.one2one.feature.call.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PixelFormat
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,11 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.vdotok.network.models.UserModel
+import com.vdotok.one2one.CustomCallView
 import com.vdotok.one2one.R
 import com.vdotok.one2one.VdoTok
+import com.vdotok.one2one.VdoTok.Companion.getVdotok
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.base.BaseFragment
 import com.vdotok.one2one.callback.FragmentCallback
@@ -28,7 +32,6 @@ import com.vdotok.one2one.utils.TimeUtils.getTimeFromSeconds
 import com.vdotok.one2one.utils.performSingleClick
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.models.CallParams
-import com.vdotok.streaming.views.CallViewRenderer
 import org.webrtc.VideoTrack
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -50,15 +53,14 @@ class CallFragment : BaseFragment(), FragmentCallback {
     private var isVideoCall = ObservableBoolean(false)
 
     private var isMuted = false
-    private var isSpeakerOff = true
     private var isVideoResume = true
 
     private var callDuration = 0
 
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
-    private lateinit var ownViewReference: CallViewRenderer
-    private lateinit var remoteViewReference: CallViewRenderer
+    private lateinit var ownViewReference: CustomCallView
+    private lateinit var remoteViewReference: CustomCallView
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
@@ -89,8 +91,8 @@ class CallFragment : BaseFragment(), FragmentCallback {
         setArgumentsData()
         displayUi(isVideoCall.get())
         setListeners()
+//        addRemoteVideoStreamForEchoTesting()
         addLocalCameraStream()
-        addRemoteVideoStreamForEchoTesting()
     }
 
     private fun addRemoteVideoStreamForEchoTesting() {
@@ -102,7 +104,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
     private fun addLocalCameraStream() {
         Handler(Looper.getMainLooper()).postDelayed({
             BaseActivity.localStream?.let { onCameraStreamReceived(it) }
-        }, TimeUnit.SECONDS.toMillis(1))
+        }, 1000)
     }
 
     private fun setArgumentsData() {
@@ -124,6 +126,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
     private fun setListeners() {
         binding.ivEndCall.performSingleClick {
             (activity as CallActivity).endCall()
+            releaseCallViews()
         }
 
         binding.ivMute.setOnClickListener { muteButtonAction() }
@@ -180,16 +183,12 @@ class CallFragment : BaseFragment(), FragmentCallback {
     }
 
     private fun speakerButtonAction() {
-        isSpeakerOff = isSpeakerOff.not()
-        when {
-            isSpeakerOff -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
-            else -> binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
-        }
-
         if (callClient.isSpeakerEnabled()) {
-           callClient.setSpeakerEnable(false)
+            callClient.setSpeakerEnable(false)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
         } else {
             callClient.setSpeakerEnable(true)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
         }
     }
 
@@ -218,16 +217,58 @@ class CallFragment : BaseFragment(), FragmentCallback {
         userName.set(userModel?.userName)
 
         if (!videoCall) {
+            callClient.setSpeakerEnable(false)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_off)
             binding.tvCallType.text = getString(R.string.audio_calling)
             binding.ivCameraOnOff.setImageResource(R.drawable.ic_video_off)
             binding.remoteView.invisible()
             binding.localView.hide()
             binding.ivCamSwitch.hide()
         } else {
+            initiateView()
+            callClient.setSpeakerEnable(true)
+            binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
             binding.tvCallType.text = getString(R.string.video_calling)
             binding.imgUserPhoto.hide()
         }
 
+    }
+
+    private fun initiateView() {
+        getVdotok()?.rootEglBaseContext?.let {
+            binding.remoteView.preview.setMirror(false)
+            binding.remoteView.preview.init(it, null)
+            binding.remoteView.preview.setZOrderOnTop(false)
+            binding.remoteView.preview.setZOrderMediaOverlay(false)
+            binding.remoteView.preview.setSecure(true)
+        }
+
+        getVdotok()?.rootEglBaseContext?.let {
+            binding.localView.preview.setMirror(false)
+            binding.localView.preview.init(it, null)
+            binding.localView.preview.setZOrderOnTop(true)
+            binding.localView.preview.setZOrderMediaOverlay(true)
+            binding.localView.preview.setSecure(true)
+        }
+    }
+
+    private fun setViewElevations() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            ViewCompat.setElevation(binding.remoteView, -1f)
+            binding.remoteView.preview.setZOrderOnTop(false)
+
+            ViewCompat.setElevation(binding.localView, 11f)
+            binding.localView.preview.setZOrderMediaOverlay(true)
+            binding.localView.preview.setZOrderOnTop(true)
+        }, 1000)
+    }
+
+    private fun releaseCallViews() {
+        binding.localView.release()
+        binding.remoteView.release()
+
+        binding.localView.preview.holder.setFormat(PixelFormat.TRANSLUCENT)
+        binding.remoteView.preview.holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
     private fun startTimer() {
@@ -252,25 +293,13 @@ class CallFragment : BaseFragment(), FragmentCallback {
         binding.tvTime.text = getTimeFromSeconds(callDuration)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        stopTimer()
-        (activity as CallActivity).endCall()
-    }
 
     override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {
         val mainHandler = activity?.mainLooper?.let { Handler(it) }
         val myRunnable = Runnable {
-
             try {
+                binding.remoteView.preview.setZOrderOnTop(false)
                 stream.addSink(binding.remoteView.setView())
-                remoteViewReference.getPreview().setMirror(false)
-                binding.remoteView.postDelayed({
-                    isSpeakerOff = false
-                    callClient.setSpeakerEnable(true)
-                }, 1000)
-                binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
-
             } catch (e: Exception) {
                 Log.i("SocketLog", "onStreamAvailable: exception" + e.printStackTrace())
             }
@@ -283,14 +312,18 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
         val mainHandler = activity?.let { Handler(it.mainLooper) }
         val myRunnable = Runnable {
+            binding.localView.preview.setZOrderOnTop(true)
             stream.addSink(binding.localView.setView())
-            ownViewReference.getPreview().setMirror(false)
+//            setViewElevations()
         }
         mainHandler?.post(myRunnable)
     }
 
     override fun endOngoingCall(sessionId: String) {
         activity?.runOnUiThread {
+            if (isVideoCall.get()) {
+                releaseCallViews()
+            }
             endCall()
         }
     }
@@ -316,8 +349,8 @@ class CallFragment : BaseFragment(), FragmentCallback {
     override fun onAcceptIncomingCall(callParams: CallParams) {
     }
 
-    private fun closeFragmentWithMessage(message: String){
-        if(isFragmentOpen) {
+    private fun closeFragmentWithMessage(message: String) {
+        if (isFragmentOpen) {
             activity?.runOnUiThread {
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
                 activity?.onBackPressed()

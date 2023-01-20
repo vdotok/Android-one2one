@@ -5,7 +5,7 @@
 
     <data>
 
-        <import type="android.view.View"/>
+        <import type="android.view.View" />
 
         <variable
             name="username"
@@ -23,16 +23,16 @@
         android:background="@color/light_grey1">
 
 
-        <com.vdotok.streaming.views.CallViewRenderer
+        <com.vdotok.one2one.CustomCallView
             android:id="@+id/remoteView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            app:avatar="@drawable/ic_user_icon"
+            app:borderStrokeColor="@color/yellow"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:avatar="@drawable/ic_user_icon"
-            app:showViewBorder="false"
-            app:borderStrokeColor="@color/yellow"/>
+            app:showViewBorder="false" />
 
         <View
             android:layout_width="match_parent"
@@ -50,9 +50,9 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="10dp"
+            android:elevation="10dp"
             android:textColor="@color/black2"
             android:textSize="14sp"
-            android:elevation="10dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="audio call" />
@@ -79,10 +79,10 @@
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_weight="1"
+            android:elevation="10dp"
             android:padding="5dp"
             android:textColor="@color/black2"
             android:textSize="14sp"
-            android:elevation="10dp"
             app:layout_constraintBottom_toBottomOf="@+id/tvUserName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tvUserName"
@@ -108,30 +108,30 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-
-        <com.vdotok.streaming.views.CallViewRenderer
-                android:id="@+id/localView"
-                android:layout_width="130dp"
-                android:layout_height="170dp"
-                android:layout_gravity="center"
-                app:layout_constraintBottom_toTopOf="@+id/bottomBar"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="10dp"
-                android:keepScreenOn="true"
-                android:layout_marginBottom="10dp"
-                app:avatar="@drawable/ic_user_icon"
-                app:showViewBorder="true"
-                app:borderStrokeWidth="12"
-                app:borderStrokeColor="@color/grayish" />
+        <com.vdotok.one2one.CustomCallView
+            android:id="@+id/localView"
+            android:layout_width="130dp"
+            android:layout_height="170dp"
+            android:layout_gravity="center"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:elevation="30dp"
+            android:focusable="true"
+            app:avatar="@drawable/ic_user_icon"
+            app:borderStrokeColor="@color/grayish"
+            app:borderStrokeWidth="12"
+            app:layout_constraintBottom_toTopOf="@+id/bottomBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:showViewBorder="true" />
 
         <LinearLayout
             android:id="@+id/bottomBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
+            android:elevation="10dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:elevation="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">
@@ -171,9 +171,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:clickable="true"
+            android:elevation="10dp"
             android:focusable="true"
             android:padding="10dp"
-            android:elevation="10dp"
             android:src="@drawable/ic_cam_switch"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTime" />
@@ -183,8 +183,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:focusable="true"
             android:elevation="10dp"
+            android:focusable="true"
             android:padding="10dp"
             android:src="@drawable/ic_speaker_off"
             app:layout_constraintEnd_toEndOf="parent"

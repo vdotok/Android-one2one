@@ -5,7 +5,6 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +12,15 @@ import android.widget.Toast
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import androidx.navigation.Navigation
+import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.R
+import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.base.BaseFragment
 import com.vdotok.one2one.callback.FragmentCallback
 import com.vdotok.one2one.databinding.LayoutCallRecieverBinding
 import com.vdotok.one2one.extensions.hide
 import com.vdotok.one2one.feature.call.activity.CallActivity
 import com.vdotok.one2one.models.AcceptCallModel
-import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.prefs.Prefs
 import com.vdotok.one2one.utils.ApplicationConstants.CALL_PARAMS
 import com.vdotok.one2one.utils.performSingleClick
@@ -40,17 +40,16 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     private var countDownTimer: CountDownTimer? = null
     private var isFragmentOpen = true
     private lateinit var binding: LayoutCallRecieverBinding
-    private var userModel : UserModel? = null
-    var username : String? = null
+    private var userModel: UserModel? = null
+    var username: String? = null
 
-    private var callParams : CallParams? = null
+    private var callParams: CallParams? = null
     private var isVideoCall: Boolean = false
 
-    private var userName : ObservableField<String> = ObservableField<String>()
-    private var incomingCallTitle : ObservableField<String> = ObservableField<String>()
+    private var userName: ObservableField<String> = ObservableField<String>()
+    private var incomingCallTitle: ObservableField<String> = ObservableField<String>()
 
     private val isIncomingCall = ObservableBoolean(false)
-
 
 
     private lateinit var callClient: CallClient
@@ -116,7 +115,7 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
         startCountDownForIncomingCall()
 
         playTone()
-        userName.set(userModel?.fullName)
+        userName.set(userModel?.userName)
         when (callParams?.mediaType) {
             MediaType.AUDIO -> {
                 incomingCallTitle.set(getString(R.string.incoming_call))
@@ -134,10 +133,11 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
         binding.imgCallReject.performSingleClick {
             disposeCountDownTimer()
             prefs.loginInfo?.let {
-                callParams?.let { it1 -> callClient.rejectIncomingCall(
-                    it.refId!!,
-                    it1.sessionUUID
-                )
+                callParams?.let { it1 ->
+                    callClient.rejectIncomingCall(
+                        it.refId!!,
+                        it1.sessionUUID
+                    )
                 }
             }
             activity?.onBackPressed()
@@ -150,13 +150,14 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     }
 
 
-    private fun startCountDownForIncomingCall(){
-        countDownTimer = object : CountDownTimer(TimeUnit.SECONDS.toMillis(20), TimeUnit.SECONDS.toMillis(10)) {
-            override fun onTick(millisUntilFinished: Long) {}
-            override fun onFinish() {
-                sendCallTimeOut()
-            }
-        }.start()
+    private fun startCountDownForIncomingCall() {
+        countDownTimer =
+            object : CountDownTimer(TimeUnit.SECONDS.toMillis(20), TimeUnit.SECONDS.toMillis(10)) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    sendCallTimeOut()
+                }
+            }.start()
     }
 
     private fun sendCallTimeOut() {
@@ -169,15 +170,22 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
         stopTune()
     }
 
-    private fun playTone(){
+    override fun onResume() {
+        super.onResume()
+        if ((activity as BaseActivity).callMissed) {
+            activity?.finish()
+        }
+    }
+
+    private fun playTone() {
         ringtone = getDefaultRingtone(activity as Context)
-        if (!ringtone?.isPlaying!!){
+        if (!ringtone?.isPlaying!!) {
             ringtone?.play()
         }
     }
 
-    private fun stopTune(){
-        if (ringtone?.isPlaying == true){
+    private fun stopTune() {
+        if (ringtone?.isPlaying == true) {
             ringtone?.stop()
         }
         ringtone = null
@@ -192,13 +200,13 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     }
 
 
-     private fun getDefaultRingtone(context: Context) :Ringtone {
-            val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-            return RingtoneManager.getRingtone(context, uri)
-        }
+    private fun getDefaultRingtone(context: Context): Ringtone {
+        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
+        return RingtoneManager.getRingtone(context, uri)
+    }
 
 
-    private fun openCallFragment(){
+    private fun openCallFragment() {
         val bundle = Bundle()
         bundle.putString("userName", userName.get())
         bundle.putParcelable(UserModel.TAG, userModel)
@@ -231,13 +239,8 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     }
 
     override fun onCallMissed() {
-       closeFragmentWithMessage("Call missed")
+        closeFragmentWithMessage("Call missed")
     }
-
-    override fun onInsufficientBalance() {
-            closeFragmentWithMessage("Insufficient Balance!")
-    }
-
 
     override fun endOngoingCall(sessionId: String) {
         closeFragmentWithMessage("Call ended")
@@ -245,6 +248,10 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
 
     override fun onCallNoAnswer() {
         closeFragmentWithMessage("No answer")
+    }
+
+    override fun onUserNotAvailable() {
+        closeFragmentWithMessage("User Not Available!")
     }
 
     override fun onCallBusy() {
@@ -255,9 +262,12 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
         closeFragmentWithMessage("Call timeout")
     }
 
+    override fun onInsufficientBalance() {
+        closeFragmentWithMessage("Insufficient Balance!")
+    }
 
-    private fun closeFragmentWithMessage(message: String){
-        if(isFragmentOpen) {
+    private fun closeFragmentWithMessage(message: String) {
+        if (isFragmentOpen) {
             activity?.runOnUiThread {
                 Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
                 activity?.onBackPressed()

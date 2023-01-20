@@ -33,7 +33,7 @@ import org.webrtc.VideoTrack
  * Created By: VdoTok
  * Date & Time: On 11/1/21 At 6:11 PM in 2021
  */
-abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
+abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
 
     lateinit var callClient: CallClient
     lateinit var prefs: Prefs
@@ -43,6 +43,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     private var isInternetConnectionRestored = false
     private var isResumeState = false
     private var reConnectStatus = false
+    var callMissed: Boolean = false
     private var audioManager: AudioManager? = null
 
     abstract fun getRootView(): View
@@ -72,6 +73,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
         }
         connectClient()
     }
+
     // when socket is disconnected
     override fun onClose(reason: String) {
         connectClient()
@@ -104,6 +106,10 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     }
 
 
+    override fun onSessionReady(mediaProjection: MediaProjection?) {
+
+    }
+
     override fun audioVideoState(state: SessionStateInfo) {
         runOnUiThread {
             mListener?.onAudioVideoStateChanged(state.audioState!!, state.videoState!!)
@@ -125,7 +131,12 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 CallStatus.CALL_REJECTED -> {
                     mListener?.onCallRejected()
                 }
+                CallStatus.TEMPORARILY_UNAVAILABLE,
+                CallStatus.TARGET_NOT_FOUND -> {
+                    mListener?.onUserNotAvailable()
+                }
                 CallStatus.CALL_MISSED -> {
+                    callMissed = true
                     mListener?.onCallMissed()
                 }
                 CallStatus.NO_ANSWER_FROM_TARGET -> {
@@ -137,7 +148,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 CallStatus.SESSION_TIMEOUT -> {
                     mListener?.onCallTimeout()
                 }
-                CallStatus.INSUFFICIENT_BALANCE ->{
+                CallStatus.INSUFFICIENT_BALANCE -> {
                     mListener?.onInsufficientBalance()
                 }
                 else -> {
@@ -147,7 +158,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
         }
     }
 
-    override fun onSessionReady(mediaProjection: MediaProjection?) {
+    override fun multiSessionCreated(sessionIds: Pair<String, String>) {
 
     }
 
@@ -160,7 +171,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                         runOnUiThread {
                             callClient.register(
                                 authToken = prefs.loginInfo?.authorizationToken!!,
-                                refId = prefs.loginInfo?.refId!!,if (reConnectStatus) 1 else 0
+                                refId = prefs.loginInfo?.refId!!, if (reConnectStatus) 1 else 0
                             )
                             reConnectStatus = false
                         }
@@ -215,9 +226,9 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                     Log.e("register", "message: ${registerResponse.responseMessage}")
 
                     getRootView().showSnackBar("Socket Connected!")
-                    if (registerResponse.reConnectStatus == 1) {
-                        callClient.initiateReInviteProcess()
-                    }
+//                    if (registerResponse.reConnectStatus == 1) {
+                    callClient.initiateReInviteProcess()
+//                    }
                 }
             }
             RegistrationStatus.UN_REGISTER,
@@ -279,7 +290,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     fun addInternetConnectionObserver() {
         mLiveDataNetwork = NetworkStatusLiveData(this.application)
 
-        mLiveDataNetwork.observe(this, { isInternetConnected ->
+        mLiveDataNetwork.observe(this) { isInternetConnected ->
             when {
                 isInternetConnected == true && isInternetConnectionRestored && !isResumeState -> {
                     Log.e("Internet", "internet connection restored!")
@@ -294,7 +305,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 else -> {
                 }
             }
-        })
+        }
     }
 
     private fun performSocketReconnection() {
@@ -318,7 +329,6 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
             ).show()
         }
     }
-
 
 
 }

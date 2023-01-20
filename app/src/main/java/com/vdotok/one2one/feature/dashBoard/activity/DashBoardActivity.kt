@@ -111,17 +111,8 @@ class DashBoardActivity : BaseActivity() {
         internetConnectionRestored = false
     }
 
-    override fun multiSessionCreated(sessionIds: Pair<String, String>) {
-
-    }
-
     override fun sessionReconnecting(sessionID: String) {
 //        TODO("Not yet implemented")
-    }
-
-    override fun onDestroy() {
-        callClient.disConnectSocket()
-        super.onDestroy()
     }
 
     override fun onStart() {
@@ -140,6 +131,7 @@ class DashBoardActivity : BaseActivity() {
     }
 
     override fun incomingCall(callParams: CallParams) {
+        callMissed = false
         (application as VdoTok).mediaTypeCheck = callParams.mediaType
         if (activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true) {
             callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
