@@ -127,6 +127,7 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
                 CallStatus.OUTGOING_CALL_ENDED -> {
                     turnSpeakerOff()
                     activeSessionId?.let { mListener?.endOngoingCall(it) }
+                    localStream = null
                 }
                 CallStatus.CALL_REJECTED -> {
                     mListener?.onCallRejected()
@@ -195,6 +196,7 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
                 }
             }
             EnumConnectionStatus.CLOSED -> {
+                mListener?.onConnectionFail()
                 runOnUiThread {
                     Toast.makeText(this, "Connection Closed!", Toast.LENGTH_SHORT).show()
                 }
@@ -293,10 +295,12 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
         mLiveDataNetwork.observe(this) { isInternetConnected ->
             when {
                 isInternetConnected == true && isInternetConnectionRestored && !isResumeState -> {
+                    mListener?.onConnectionSuccess()
                     Log.e("Internet", "internet connection restored!")
                     performSocketReconnection()
                 }
                 isInternetConnected == false -> {
+                    mListener?.onConnectionFail()
                     isInternetConnectionRestored = true
                     reConnectStatus = true
                     isResumeState = false
