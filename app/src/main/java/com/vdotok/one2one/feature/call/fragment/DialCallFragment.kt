@@ -72,6 +72,7 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
 
         setBindingData()
         setArgumentsData()
+        BaseActivity.mListener = this
 
         when {
             isIncomingCall.get() -> setDataForIncomingCall()
