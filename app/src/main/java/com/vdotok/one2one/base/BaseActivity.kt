@@ -297,7 +297,7 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
                 isInternetConnected == true && isInternetConnectionRestored && !isResumeState -> {
                     mListener?.onConnectionSuccess()
                     Log.e("Internet", "internet connection restored!")
-                    performSocketReconnection()
+                    if (!callClient.isConnected()) performSocketReconnection()
                 }
                 isInternetConnected == false -> {
                     mListener?.onConnectionFail()
