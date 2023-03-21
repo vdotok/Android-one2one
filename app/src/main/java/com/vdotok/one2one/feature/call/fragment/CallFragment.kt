@@ -125,8 +125,8 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private fun setListeners() {
         binding.ivEndCall.performSingleClick {
-            (activity as CallActivity).endCall()
             releaseCallViews()
+            (activity as CallActivity).endCall()
         }
 
         binding.ivMute.setOnClickListener { muteButtonAction() }
@@ -210,7 +210,9 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private fun endCall() {
         stopTimer()
-        this.requireActivity().finish()
+        Handler(Looper.getMainLooper()).postDelayed({
+            this.requireActivity().finish()
+        }, 1000)
     }
 
     private fun displayUi(videoCall: Boolean) {

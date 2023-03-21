@@ -5,6 +5,9 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -196,7 +199,9 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
 
         callParams?.let {
             (activity as CallActivity).acceptIncomingCall(it)
-            openCallFragment()
+            Handler(Looper.getMainLooper()).postDelayed({
+                openCallFragment()
+            }, 1000)
         }
     }
 
@@ -227,10 +232,15 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
                 bundle.putParcelable(UserModel.TAG, userModel)
                 bundle.putBoolean(CallActivity.VIDEO_CALL, isVideoCall)
                 bundle.putBoolean(CallActivity.IN_COMING_CALL, false)
-                Navigation.findNavController(binding.root).navigate(
-                    R.id.action_open_call_fragment,
-                    bundle
-                )
+                bundle.putParcelable(AcceptCallModel.TAG, callParams)
+                try {
+                    Navigation.findNavController(binding.root).navigate(
+                        R.id.action_open_call_fragment,
+                        bundle
+                    )
+                } catch (ex: Exception) {
+                    Log.e("NavigationIssue", "onStartCalling: ${ex.printStackTrace()}")
+                }
             }
         }
     }

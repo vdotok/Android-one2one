@@ -68,7 +68,6 @@ class CallActivity : BaseActivity() {
         activeSessionId?.let {
             callClient.endCallSession(arrayListOf(it))
         }
-        finish()
     }
 
     override fun incomingCall(callParams: CallParams) {
