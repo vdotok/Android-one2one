@@ -25,7 +25,7 @@ IDE Installation & Build Guide
 Bravo! You’ve successfully configured the project in Android Studio.
 
 <b>Download Call Lib:</b>
-* Open following link to get the latest aar: https://sdk.vdotok.com/Android-SDKs/streamingSDK.aar
+* Use the following link to get the latest aar: https://sdk.vdotok.com/Android-SDKs/streamingSDK.aar
 
 <b>Configure Lib:</b>
 * In <b> Android Studio File Explorer</b>, select <b>Project</b>
