@@ -212,14 +212,12 @@ class AllUserListFragment : BaseFragment(), OnItemClickCallback {
 
     override fun onResume() {
         super.onResume()
-        if (callClient.isConnected() == true) {
+        if (callClient.isConnected()) {
             binding.tvLed.setImageResource(R.drawable.led_connected)
         } else {
             binding.tvLed.setImageResource(R.drawable.led_error)
         }
-        binding.tvLed.postDelayed({
-            BaseActivity.mListener = this@AllUserListFragment
-        }, 1000)
+        BaseActivity.mListener = this
     }
 
     override fun searchResult(position: Int) {
