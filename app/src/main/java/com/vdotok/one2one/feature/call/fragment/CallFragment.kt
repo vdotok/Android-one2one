@@ -32,6 +32,7 @@ import com.vdotok.one2one.utils.TimeUtils.getTimeFromSeconds
 import com.vdotok.one2one.utils.performSingleClick
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.models.CallParams
+import com.vdotok.streaming.utils.videoTrack
 import org.webrtc.VideoTrack
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -93,6 +94,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
         setListeners()
 //        addRemoteVideoStreamForEchoTesting()
         addLocalCameraStream()
+        addRemoteCameraStream()
     }
 
     private fun addRemoteVideoStreamForEchoTesting() {
@@ -104,6 +106,12 @@ class CallFragment : BaseFragment(), FragmentCallback {
     private fun addLocalCameraStream() {
         Handler(Looper.getMainLooper()).postDelayed({
             BaseActivity.localStream?.let { onCameraStreamReceived(it) }
+        }, 1000)
+    }
+
+    private fun addRemoteCameraStream() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            BaseActivity.remoteStream?.let { onRemoteStreamReceived(it, "", "") }
         }, 1000)
     }
 
