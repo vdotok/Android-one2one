@@ -140,7 +140,7 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
                 callParams?.let { it1 ->
                     callClient.rejectIncomingCall(
                         it.refId!!,
-                        it1.sessionUUID
+                        it1.sessionUuid
                     )
                 }
             }
@@ -165,7 +165,7 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     }
 
     private fun sendCallTimeOut() {
-        callClient.callTimeout(prefs.loginInfo?.refId!!, callParams?.sessionUUID!!)
+        callClient.callTimeout(prefs.loginInfo?.refId!!, callParams?.sessionUuid!!)
     }
 
     override fun onDestroyView() {

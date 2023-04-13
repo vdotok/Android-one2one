@@ -134,7 +134,7 @@ class DashBoardActivity : BaseActivity() {
         callMissed = false
         (application as VdoTok).mediaTypeCheck = callParams.mediaType
         if (activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true) {
-            callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
+            callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUuid)
             return
         }
         mListener?.onAcceptIncomingCall(callParams)
