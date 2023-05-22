@@ -1,12 +1,14 @@
 package com.vdotok.one2one.feature.call.fragment
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -57,8 +59,8 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
 
     private lateinit var callClient: CallClient
     private lateinit var prefs: Prefs
+    var player: MediaPlayer? = null
 
-    private var ringtone: Ringtone? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -116,6 +118,7 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     }
 
     private fun setDataForIncomingCall() {
+        player = MediaPlayer.create(this.requireContext(), Settings.System.DEFAULT_RINGTONE_URI)
         startCountDownForIncomingCall()
 
         playTone()
@@ -182,17 +185,18 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
     }
 
     private fun playTone() {
-        ringtone = getDefaultRingtone(activity as Context)
-        if (!ringtone?.isPlaying!!) {
-            ringtone?.play()
+        player?.let {
+            if (!it.isPlaying)
+                player?.start()
         }
     }
 
     private fun stopTune() {
-        if (ringtone?.isPlaying == true) {
-            ringtone?.stop()
+        player?.let {
+            if (it.isPlaying)
+                player?.stop()
         }
-        ringtone = null
+        player = null
     }
 
     private fun openAudioCallFragment() {
@@ -203,12 +207,6 @@ class DialCallFragment : BaseFragment(), FragmentCallback {
                 openCallFragment()
             }, 1000)
         }
-    }
-
-
-    private fun getDefaultRingtone(context: Context): Ringtone {
-        val uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-        return RingtoneManager.getRingtone(context, uri)
     }
 
 
