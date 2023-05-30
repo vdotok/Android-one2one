@@ -81,7 +81,7 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
 
     fun connectClient() {
         prefs.loginInfo?.mediaServer?.let {
-            if (callClient.isConnected() == null || callClient.isConnected() == false)
+            if (!callClient.isConnected())
                 callClient.connect(getMediaServerAddress(it), it.endPoint)
         }
     }
@@ -246,7 +246,7 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
     // Stream callbacks
     override fun onRemoteStream(stream: VideoTrack, refId: String, sessionID: String) {
         remoteStream = stream
-        mListener?.onRemoteStreamReceived(stream, refId, sessionID)
+//        mListener?.onRemoteStreamReceived(stream, refId, sessionID)
     }
 
     override fun onCameraStream(stream: VideoTrack) {

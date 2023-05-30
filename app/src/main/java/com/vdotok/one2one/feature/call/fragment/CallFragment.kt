@@ -32,7 +32,6 @@ import com.vdotok.one2one.utils.TimeUtils.getTimeFromSeconds
 import com.vdotok.one2one.utils.performSingleClick
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.models.CallParams
-import com.vdotok.streaming.utils.videoTrack
 import org.webrtc.VideoTrack
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -97,12 +96,6 @@ class CallFragment : BaseFragment(), FragmentCallback {
         addRemoteCameraStream()
     }
 
-    private fun addRemoteVideoStreamForEchoTesting() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            BaseActivity.remoteStream?.let { onRemoteStreamReceived(it, "", "") }
-        }, TimeUnit.SECONDS.toMillis(1))
-    }
-
     private fun addLocalCameraStream() {
         Handler(Looper.getMainLooper()).postDelayed({
             BaseActivity.localStream?.let { onCameraStreamReceived(it) }
@@ -112,7 +105,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
     private fun addRemoteCameraStream() {
         Handler(Looper.getMainLooper()).postDelayed({
             BaseActivity.remoteStream?.let { onRemoteStreamReceived(it, "", "") }
-        }, 1000)
+        }, 1500)
     }
 
     private fun setArgumentsData() {
@@ -246,7 +239,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private fun initiateView() {
         getVdotok()?.rootEglBaseContext?.let {
-            binding.remoteView.preview.setMirror(false)
+            binding.remoteView.preview.setMirror(true)
             binding.remoteView.preview.init(it, null)
             binding.remoteView.preview.setZOrderOnTop(false)
             binding.remoteView.preview.setZOrderMediaOverlay(false)
@@ -254,7 +247,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
         }
 
         getVdotok()?.rootEglBaseContext?.let {
-            binding.localView.preview.setMirror(false)
+            binding.localView.preview.setMirror(true)
             binding.localView.preview.init(it, null)
             binding.localView.preview.setZOrderOnTop(true)
             binding.localView.preview.setZOrderMediaOverlay(true)
