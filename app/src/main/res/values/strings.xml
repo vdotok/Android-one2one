@@ -39,6 +39,7 @@
     <string name="contactList">Contact List</string>
 
     <string name="in_progress">In progress!</string>
+    <string name="api_url_empty">Api Url is Empty!</string>
 
     <!--    image descriptions-->
     <string name="description_attachment">image for attachment menu</string>
