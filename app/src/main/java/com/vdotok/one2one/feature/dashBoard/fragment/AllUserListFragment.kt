@@ -131,8 +131,9 @@ class AllUserListFragment : BaseFragment(), OnItemClickCallback {
                                 }
                                 is Result.Success -> {
                                     binding.progressBar.toggleVisibility()
-                                    userList = it.data.users
-                                    adapter.updateData(it.data.users)
+                                    val list = it.data.users as ArrayList<UserModel>
+                                    list.removeIf { it.refId == prefs.loginInfo?.refId }
+                                    adapter.updateData(list)
                                 }
                                 is Result.Failure -> {
                                     binding.swipeRefreshLayout.isRefreshing = false

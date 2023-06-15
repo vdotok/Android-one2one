@@ -5,13 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.R
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.databinding.ActivityCallBinding
 import com.vdotok.one2one.models.AcceptCallModel
-import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.utils.ApplicationConstants
 import com.vdotok.streaming.models.CallParams
 

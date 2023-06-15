@@ -12,10 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.vdotok.network.models.LoginResponse
+import com.vdotok.network.utils.Constants.BASE_URL
 import com.vdotok.one2one.callback.FragmentCallback
 import com.vdotok.one2one.extensions.showSnackBar
+import com.vdotok.one2one.feature.dashBoard.activity.DashBoardActivity
 import com.vdotok.one2one.prefs.Prefs
 import com.vdotok.one2one.utils.ApplicationConstants
+import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
 import com.vdotok.one2one.utils.NetworkStatusLiveData
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.commands.CallInfoResponse
@@ -65,18 +68,27 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
     }
 
     fun initCallClient() {
-
-        CallClient.getInstance(this)?.setConstants(ApplicationConstants.SDK_PROJECT_ID)
         CallClient.getInstance(this)?.let {
             callClient = it
             callClient.setListener(this)
         }
+        setConstants()
         connectClient()
+    }
+
+
+    private fun setConstants() {
+        CallClient.getInstance(this)?.setConstants(prefs.userProjectId.toString())
     }
 
     // when socket is disconnected
     override fun onClose(reason: String) {
-        connectClient()
+     connectClient()
+    }
+
+
+    fun getMediaServerAddress(mediaServer: LoginResponse.MediaServerMap): String {
+        return "https://${mediaServer.host}:${mediaServer.port}"
     }
 
     fun connectClient() {
@@ -84,11 +96,6 @@ abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
             if (!callClient.isConnected())
                 callClient.connect(getMediaServerAddress(it), it.endPoint)
         }
-    }
-
-
-    private fun getMediaServerAddress(mediaServer: LoginResponse.MediaServerMap): String {
-        return "https://${mediaServer.host}:${mediaServer.port}"
     }
 
     fun turnSpeakerOff() {

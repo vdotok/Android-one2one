@@ -6,6 +6,7 @@ import androidx.preference.PreferenceManager
 import com.google.gson.Gson
 import com.vdotok.network.models.LoginResponse
 import com.vdotok.network.models.UserModel
+import com.vdotok.one2one.models.QRCodeModel
 import com.vdotok.one2one.utils.ApplicationConstants
 
 /**
@@ -17,20 +18,27 @@ import com.vdotok.one2one.utils.ApplicationConstants
  */
 class Prefs(context: Context?) {
 
-    private val REGISTERED_USER_INFO = "REGISTERED_USER_INFO"
+    private val REGISTERED_USER_PROJECT = "REGISTERED_USER_PROJECT"
+    private val REGISTERED_USER_BASE = "REGISTERED_USER_BASE"
     private val mPrefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-    var userRegisterInfo: UserModel?
+    var userProjectId: String?
         get(){
-            val gson = Gson()
-            val json = mPrefs.getString(REGISTERED_USER_INFO, "")
-            return gson.fromJson(json, UserModel::class.java)
+            return mPrefs.getString(REGISTERED_USER_PROJECT, "")
         }
         set(userInfo) {
             val mEditor: SharedPreferences.Editor = mPrefs.edit()
-            val gson = Gson()
-            val json = gson.toJson(userInfo)
-            mEditor.putString(REGISTERED_USER_INFO, json)
+            mEditor.putString(REGISTERED_USER_PROJECT, userInfo)
+            mEditor.apply()
+        }
+
+    var userBaseUrl: String?
+        get(){
+            return mPrefs.getString(REGISTERED_USER_BASE, "")
+        }
+        set(userInfo) {
+            val mEditor: SharedPreferences.Editor = mPrefs.edit()
+            mEditor.putString(REGISTERED_USER_BASE, userInfo)
             mEditor.apply()
         }
 

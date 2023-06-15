@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -14,7 +13,9 @@ import com.vdotok.one2one.R
 import com.vdotok.one2one.VdoTok
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.databinding.ActivityDashBoardBinding
+import com.vdotok.one2one.prefs.Prefs
 import com.vdotok.one2one.utils.ApplicationConstants
+import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.enums.CallType
 import com.vdotok.streaming.enums.MediaType
 import com.vdotok.streaming.enums.SessionType
@@ -129,6 +130,7 @@ class DashBoardActivity : BaseActivity() {
     override fun onClose(reason: String) {
         connectClient()
     }
+
 
     override fun incomingCall(callParams: CallParams) {
         callMissed = false

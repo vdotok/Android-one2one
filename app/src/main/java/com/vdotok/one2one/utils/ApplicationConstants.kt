@@ -8,7 +8,8 @@ package com.vdotok.one2one.utils
 object ApplicationConstants {
 
     //    SDK AUTH PARAMS
-    const val SDK_PROJECT_ID: String = "Please add your project id here"
+    var SDK_PROJECT_ID: String = ""
+//    const val SDK_PROJECT_ID: String = "1RN1RP"
 
 
     //    Prefs constants

@@ -2,7 +2,12 @@ package com.vdotok.one2one
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.vdotok.network.utils.Constants.BASE_URL
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.vdotok.one2one.prefs.Prefs
+import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.enums.MediaType
 import org.webrtc.EglBase
@@ -54,6 +59,14 @@ class VdoTok : Application() {
         callClient = CallClient.getInstance(this)!!
         prefs = Prefs(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(lifecycleEventObserver)
+        setVariables()
+    }
+
+    private fun setVariables() {
+        if (!prefs.userProjectId.isNullOrEmpty() && !prefs.userBaseUrl.isNullOrEmpty()) {
+            BASE_URL = prefs.userBaseUrl.toString()
+            SDK_PROJECT_ID = prefs.userProjectId.toString()
+        }
     }
 
     companion object {

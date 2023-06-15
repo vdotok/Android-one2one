@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.vdotok.streaming.views.ProxyVideoSink
-import org.webrtc.EglBase
 import org.webrtc.SurfaceViewRenderer
 
 class CustomCallView(context: Context, attrs: AttributeSet) :
