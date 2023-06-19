@@ -106,8 +106,8 @@ class LoginFragment : Fragment() {
 
     private fun loginUser(email: String, password: String) {
         activity?.let { it ->
-            if (!prefs.userProjectId.isNullOrEmpty() && !prefs.userBaseUrl.isNullOrEmpty()) {
-                viewModel.loginUser(email, password, projectId = prefs.userProjectId.toString())
+            if (SDK_PROJECT_ID.isNotEmpty() && BASE_URL.isNotEmpty()) {
+                viewModel.loginUser(email, password, projectId = SDK_PROJECT_ID)
                     .observe(viewLifecycleOwner) {
                         when (it) {
                             Result.Loading -> {
