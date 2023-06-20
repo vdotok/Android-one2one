@@ -133,6 +133,7 @@ class AllUserListFragment : BaseFragment(), OnItemClickCallback {
                                     binding.progressBar.toggleVisibility()
                                     val list = it.data.users as ArrayList<UserModel>
                                     list.removeIf { it.refId == prefs.loginInfo?.refId }
+                                    userList = list
                                     adapter.updateData(list)
                                 }
                                 is Result.Failure -> {
