@@ -2,6 +2,7 @@ package com.vdotok.one2one.feature.call.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PixelFormat
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -10,13 +11,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
 import androidx.databinding.ObservableBoolean
 import androidx.databinding.ObservableField
 import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.CustomCallView
 import com.vdotok.one2one.R
 import com.vdotok.one2one.VdoTok
+import com.vdotok.one2one.VdoTok.Companion.getVdotok
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.base.BaseFragment
 import com.vdotok.one2one.callback.FragmentCallback
@@ -89,20 +91,21 @@ class CallFragment : BaseFragment(), FragmentCallback {
         setArgumentsData()
         displayUi(isVideoCall.get())
         setListeners()
+//        addRemoteVideoStreamForEchoTesting()
         addLocalCameraStream()
-        addRemoteVideoStreamForEchoTesting()
-    }
-
-    private fun addRemoteVideoStreamForEchoTesting() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            BaseActivity.remoteStream?.let { onRemoteStreamReceived(it, "", "") }
-        }, TimeUnit.SECONDS.toMillis(1))
+        addRemoteCameraStream()
     }
 
     private fun addLocalCameraStream() {
         Handler(Looper.getMainLooper()).postDelayed({
             BaseActivity.localStream?.let { onCameraStreamReceived(it) }
-        }, TimeUnit.SECONDS.toMillis(1))
+        }, 1000)
+    }
+
+    private fun addRemoteCameraStream() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            BaseActivity.remoteStream?.let { onRemoteStreamReceived(it, "", "") }
+        }, 1500)
     }
 
     private fun setArgumentsData() {
@@ -123,6 +126,7 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private fun setListeners() {
         binding.ivEndCall.performSingleClick {
+            releaseCallViews()
             (activity as CallActivity).endCall()
         }
 
@@ -207,7 +211,9 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
     private fun endCall() {
         stopTimer()
-        this.requireActivity().finish()
+        Handler(Looper.getMainLooper()).postDelayed({
+            this.requireActivity().finish()
+        }, 1000)
     }
 
     private fun displayUi(videoCall: Boolean) {
@@ -222,12 +228,50 @@ class CallFragment : BaseFragment(), FragmentCallback {
             binding.localView.hide()
             binding.ivCamSwitch.hide()
         } else {
+            initiateView()
             callClient.setSpeakerEnable(true)
             binding.ivSpeaker.setImageResource(R.drawable.ic_speaker_on)
             binding.tvCallType.text = getString(R.string.video_calling)
             binding.imgUserPhoto.hide()
         }
 
+    }
+
+    private fun initiateView() {
+        getVdotok()?.rootEglBaseContext?.let {
+            binding.remoteView.preview.setMirror(true)
+            binding.remoteView.preview.init(it, null)
+            binding.remoteView.preview.setZOrderOnTop(false)
+            binding.remoteView.preview.setZOrderMediaOverlay(false)
+            binding.remoteView.preview.setSecure(true)
+        }
+
+        getVdotok()?.rootEglBaseContext?.let {
+            binding.localView.preview.setMirror(true)
+            binding.localView.preview.init(it, null)
+            binding.localView.preview.setZOrderOnTop(true)
+            binding.localView.preview.setZOrderMediaOverlay(true)
+            binding.localView.preview.setSecure(true)
+        }
+    }
+
+    private fun setViewElevations() {
+        Handler(Looper.getMainLooper()).postDelayed({
+            ViewCompat.setElevation(binding.remoteView, -1f)
+            binding.remoteView.preview.setZOrderOnTop(false)
+
+            ViewCompat.setElevation(binding.localView, 11f)
+            binding.localView.preview.setZOrderMediaOverlay(true)
+            binding.localView.preview.setZOrderOnTop(true)
+        }, 1000)
+    }
+
+    private fun releaseCallViews() {
+        binding.localView.release()
+        binding.remoteView.release()
+
+        binding.localView.preview.holder.setFormat(PixelFormat.TRANSLUCENT)
+        binding.remoteView.preview.holder.setFormat(PixelFormat.TRANSLUCENT)
     }
 
     private fun startTimer() {
@@ -256,8 +300,8 @@ class CallFragment : BaseFragment(), FragmentCallback {
     override fun onRemoteStreamReceived(stream: VideoTrack, refId: String, sessionID: String) {
         val mainHandler = activity?.mainLooper?.let { Handler(it) }
         val myRunnable = Runnable {
-
             try {
+                binding.remoteView.preview.setZOrderOnTop(false)
                 stream.addSink(binding.remoteView.setView())
             } catch (e: Exception) {
                 Log.i("SocketLog", "onStreamAvailable: exception" + e.printStackTrace())
@@ -271,13 +315,18 @@ class CallFragment : BaseFragment(), FragmentCallback {
 
         val mainHandler = activity?.let { Handler(it.mainLooper) }
         val myRunnable = Runnable {
+            binding.localView.preview.setZOrderOnTop(true)
             stream.addSink(binding.localView.setView())
+//            setViewElevations()
         }
         mainHandler?.post(myRunnable)
     }
 
     override fun endOngoingCall(sessionId: String) {
         activity?.runOnUiThread {
+            if (isVideoCall.get()) {
+                releaseCallViews()
+            }
             endCall()
         }
     }

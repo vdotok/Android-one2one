@@ -6,10 +6,9 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.R
 import com.vdotok.one2one.databinding.UserRowBinding
-import com.vdotok.network.models.UserModel
-
 
 
 class AllUserListAdapter(private val list: List<UserModel>, private val callbacks: OnItemClickCallback):

@@ -39,6 +39,7 @@
     <string name="contactList">Contact List</string>
 
     <string name="in_progress">In progress!</string>
+    <string name="api_url_empty">Api Url is Empty!</string>
 
     <!--    image descriptions-->
     <string name="description_attachment">image for attachment menu</string>
@@ -46,7 +47,7 @@
     <string name="description_emoji_keyboard">image to enable emoji keyboard</string>
     <string name="description_back_button">image back button</string>
     <string name="description_msg_sent_success">image message sent</string>
-    <string name="sign_up_to_your_account">Sign Up to your account</string>
+    <string name="sign_up_to_your_account">Sign Up</string>
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="stop_call">Stop call</string>
     <string name="no_contacts">No contacts found!</string>

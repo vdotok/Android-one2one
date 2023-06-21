@@ -109,6 +109,13 @@ xmlns:tools="http://schemas.android.com/tools">
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toTopOf="@id/sign_up_btn" />
 
+            <ImageView
+                android:id="@+id/scanner"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/code_scanner"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"  />
 
             <TextView
                 android:id="@+id/sign_up_btn"

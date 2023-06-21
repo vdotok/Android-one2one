@@ -12,10 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 import com.vdotok.network.models.LoginResponse
+import com.vdotok.network.utils.Constants.BASE_URL
 import com.vdotok.one2one.callback.FragmentCallback
 import com.vdotok.one2one.extensions.showSnackBar
+import com.vdotok.one2one.feature.dashBoard.activity.DashBoardActivity
 import com.vdotok.one2one.prefs.Prefs
 import com.vdotok.one2one.utils.ApplicationConstants
+import com.vdotok.one2one.utils.ApplicationConstants.SDK_PROJECT_ID
 import com.vdotok.one2one.utils.NetworkStatusLiveData
 import com.vdotok.streaming.CallClient
 import com.vdotok.streaming.commands.CallInfoResponse
@@ -33,7 +36,7 @@ import org.webrtc.VideoTrack
  * Created By: VdoTok
  * Date & Time: On 11/1/21 At 6:11 PM in 2021
  */
-abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
+abstract class BaseActivity : AppCompatActivity(), CallSDKListener {
 
     lateinit var callClient: CallClient
     lateinit var prefs: Prefs
@@ -43,6 +46,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     private var isInternetConnectionRestored = false
     private var isResumeState = false
     private var reConnectStatus = false
+    var callMissed: Boolean = false
     private var audioManager: AudioManager? = null
 
     abstract fun getRootView(): View
@@ -64,29 +68,34 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     }
 
     fun initCallClient() {
-
-        CallClient.getInstance(this)?.setConstants(ApplicationConstants.SDK_PROJECT_ID)
         CallClient.getInstance(this)?.let {
             callClient = it
             callClient.setListener(this)
         }
+        setConstants()
         connectClient()
     }
+
+
+    private fun setConstants() {
+        CallClient.getInstance(this)?.setConstants(prefs.userProjectId.toString())
+    }
+
     // when socket is disconnected
     override fun onClose(reason: String) {
-        connectClient()
+     connectClient()
+    }
+
+
+    fun getMediaServerAddress(mediaServer: LoginResponse.MediaServerMap): String {
+        return "https://${mediaServer.host}:${mediaServer.port}"
     }
 
     fun connectClient() {
         prefs.loginInfo?.mediaServer?.let {
-            if (callClient.isConnected() == null || callClient.isConnected() == false)
+            if (!callClient.isConnected())
                 callClient.connect(getMediaServerAddress(it), it.endPoint)
         }
-    }
-
-
-    private fun getMediaServerAddress(mediaServer: LoginResponse.MediaServerMap): String {
-        return "https://${mediaServer.host}:${mediaServer.port}"
     }
 
     fun turnSpeakerOff() {
@@ -103,6 +112,10 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     override fun onPublicURL(publicURL: String) {
     }
 
+
+    override fun onSessionReady(mediaProjection: MediaProjection?) {
+
+    }
 
     override fun audioVideoState(state: SessionStateInfo) {
         runOnUiThread {
@@ -121,11 +134,17 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 CallStatus.OUTGOING_CALL_ENDED -> {
                     turnSpeakerOff()
                     activeSessionId?.let { mListener?.endOngoingCall(it) }
+                    localStream = null
                 }
                 CallStatus.CALL_REJECTED -> {
                     mListener?.onCallRejected()
                 }
+                CallStatus.TEMPORARILY_UNAVAILABLE,
+                CallStatus.TARGET_NOT_FOUND -> {
+                    mListener?.onUserNotAvailable()
+                }
                 CallStatus.CALL_MISSED -> {
+                    callMissed = true
                     mListener?.onCallMissed()
                 }
                 CallStatus.NO_ANSWER_FROM_TARGET -> {
@@ -137,7 +156,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 CallStatus.SESSION_TIMEOUT -> {
                     mListener?.onCallTimeout()
                 }
-                CallStatus.INSUFFICIENT_BALANCE ->{
+                CallStatus.INSUFFICIENT_BALANCE -> {
                     mListener?.onInsufficientBalance()
                 }
                 else -> {
@@ -147,7 +166,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
         }
     }
 
-    override fun onSessionReady(mediaProjection: MediaProjection?) {
+    override fun multiSessionCreated(sessionIds: Pair<String, String>) {
 
     }
 
@@ -160,7 +179,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                         runOnUiThread {
                             callClient.register(
                                 authToken = prefs.loginInfo?.authorizationToken!!,
-                                refId = prefs.loginInfo?.refId!!,if (reConnectStatus) 1 else 0
+                                refId = prefs.loginInfo?.refId!!, if (reConnectStatus) 1 else 0
                             )
                             reConnectStatus = false
                         }
@@ -184,6 +203,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 }
             }
             EnumConnectionStatus.CLOSED -> {
+                mListener?.onConnectionFail()
                 runOnUiThread {
                     Toast.makeText(this, "Connection Closed!", Toast.LENGTH_SHORT).show()
                 }
@@ -193,12 +213,12 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
         }
     }
 
+    override fun incomingCall(callParams: CallParams) {
+    }
+
     override fun onDestroy() {
         mLiveDataNetwork.removeObservers(this)
         super.onDestroy()
-    }
-
-    override fun incomingCall(callParams: CallParams) {
     }
 
     override fun registrationStatus(registerResponse: RegisterResponse) {
@@ -215,7 +235,9 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                     Log.e("register", "message: ${registerResponse.responseMessage}")
 
                     getRootView().showSnackBar("Socket Connected!")
+//                    if (registerResponse.reConnectStatus == 1) {
                     callClient.initiateReInviteProcess()
+//                    }
                 }
             }
             RegistrationStatus.UN_REGISTER,
@@ -231,7 +253,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     // Stream callbacks
     override fun onRemoteStream(stream: VideoTrack, refId: String, sessionID: String) {
         remoteStream = stream
-        mListener?.onRemoteStreamReceived(stream, refId, sessionID)
+//        mListener?.onRemoteStreamReceived(stream, refId, sessionID)
     }
 
     override fun onCameraStream(stream: VideoTrack) {
@@ -277,13 +299,15 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
     fun addInternetConnectionObserver() {
         mLiveDataNetwork = NetworkStatusLiveData(this.application)
 
-        mLiveDataNetwork.observe(this, { isInternetConnected ->
+        mLiveDataNetwork.observe(this) { isInternetConnected ->
             when {
                 isInternetConnected == true && isInternetConnectionRestored && !isResumeState -> {
+                    mListener?.onConnectionSuccess()
                     Log.e("Internet", "internet connection restored!")
-                    performSocketReconnection()
+                    if (!callClient.isConnected()) performSocketReconnection()
                 }
                 isInternetConnected == false -> {
+                    mListener?.onConnectionFail()
                     isInternetConnectionRestored = true
                     reConnectStatus = true
                     isResumeState = false
@@ -292,7 +316,7 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 else -> {
                 }
             }
-        })
+        }
     }
 
     private fun performSocketReconnection() {
@@ -315,9 +339,6 @@ abstract class BaseActivity: AppCompatActivity(), CallSDKListener {
                 Snackbar.LENGTH_LONG
             ).show()
         }
-    }
-
-    override fun sessionReconnecting(sessionID: String) {
     }
 
 

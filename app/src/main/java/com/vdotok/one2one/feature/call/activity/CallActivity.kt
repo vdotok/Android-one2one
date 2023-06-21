@@ -2,18 +2,15 @@ package com.vdotok.one2one.feature.call.activity
 
 import android.content.Context
 import android.content.Intent
-import android.media.projection.MediaProjection
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import com.vdotok.network.models.UserModel
 import com.vdotok.one2one.R
 import com.vdotok.one2one.base.BaseActivity
 import com.vdotok.one2one.databinding.ActivityCallBinding
 import com.vdotok.one2one.models.AcceptCallModel
-import com.vdotok.network.models.UserModel
-import com.vdotok.one2one.feature.dashBoard.activity.DashBoardActivity
 import com.vdotok.one2one.utils.ApplicationConstants
 import com.vdotok.streaming.models.CallParams
 
@@ -51,6 +48,10 @@ class CallActivity : BaseActivity() {
 
     }
 
+    override fun sessionReconnecting(sessionID: String) {
+//        TODO("Not yet implemented")
+    }
+
     fun acceptIncomingCall(callParams: CallParams) {
         prefs.loginInfo?.let {
             activeSessionId = callClient.acceptIncomingCall(
@@ -66,12 +67,11 @@ class CallActivity : BaseActivity() {
         activeSessionId?.let {
             callClient.endCallSession(arrayListOf(it))
         }
-        finish()
     }
 
     override fun incomingCall(callParams: CallParams) {
         if (activeSessionId?.let { callClient.getActiveSessionClient(it) != null } == true) {
-            callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUUID)
+            callClient.sessionBusy(prefs.loginInfo?.refId!!, callParams.sessionUuid)
             return
         }
         mListener?.onAcceptIncomingCall(callParams)

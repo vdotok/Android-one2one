@@ -8,22 +8,19 @@ import com.vdotok.network.models.LoginUserModel
 import com.vdotok.network.models.SignUpModel
 import com.vdotok.network.network.Result
 import com.vdotok.network.repository.AccountRepository
-import com.vdotok.one2one.utils.ApplicationConstants
 
 
 class AccountViewModel: ViewModel() {
 
-    fun loginUser(email: String, password: String) = liveData {
-
+    fun loginUser(email: String, password: String,projectId :String) = liveData {
             val service = RetrofitModule.provideRetrofitService()
             val repo = AccountRepository(service)
             emit(Result.Loading)
-            emit(repo.login(LoginUserModel(email, password, ApplicationConstants.SDK_PROJECT_ID)))
+            emit(repo.login(LoginUserModel(email, password,projectId)))
     }
 
 
     fun checkEmailAlreadyExist(email: String) = liveData {
-
         val service = RetrofitModule.provideRetrofitService()
         val repo = AccountRepository(service)
         emit(Result.Loading)

@@ -11,7 +11,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.vdotok.streaming.views.ProxyVideoSink
-import org.webrtc.EglBase
 import org.webrtc.SurfaceViewRenderer
 
 class CustomCallView(context: Context, attrs: AttributeSet) :
@@ -23,9 +22,6 @@ class CustomCallView(context: Context, attrs: AttributeSet) :
     var preview: SurfaceViewRenderer
     private var borderView: View
     var proxyVideoSink: ProxyVideoSink
-    private val rootEglBase = EglBase.create()
-    var refID: String? = null
-    var sessionID: String? = null
 
     init {
         inflate(context, R.layout.custom_call_view, this)
@@ -36,11 +32,6 @@ class CustomCallView(context: Context, attrs: AttributeSet) :
         proxyVideoSink = ProxyVideoSink()
         preview = findViewById(R.id.local_gl_surface_view)
         borderView = findViewById(R.id.borderView)
-        preview.setMirror(false)
-        preview.init(rootEglBase.eglBaseContext, null)
-        preview.setZOrderOnTop(true)
-        preview.setZOrderMediaOverlay(true)
-
 
         context.theme.obtainStyledAttributes(
             attrs,
@@ -91,8 +82,6 @@ class CustomCallView(context: Context, attrs: AttributeSet) :
         try {
             preview.release()
             preview.clearImage()
-            rootEglBase.releaseSurface()
-            rootEglBase.release()
         } catch (ex: Exception) {
             ex.printStackTrace()
         }
