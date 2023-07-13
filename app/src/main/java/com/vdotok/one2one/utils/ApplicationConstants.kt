@@ -9,7 +9,6 @@ object ApplicationConstants {
 
     //    SDK AUTH PARAMS
     var SDK_PROJECT_ID: String = "Please add your project id here"
-//    const val SDK_PROJECT_ID: String = "1RN1RP"
 
 
     //    Prefs constants
